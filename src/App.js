@@ -229,7 +229,7 @@ const WeddingGiftList = () => {
       .from('gifts')
       .update({
         status: 'purchased',
-        purchased_by: purchaseForm.name.trim(),
+        purchase_by: purchaseForm.name.trim(),
         purchase_message: purchaseForm.message.trim()
       })
       .eq('id', selectedGift.id);
@@ -300,7 +300,7 @@ const WeddingGiftList = () => {
       .from('gifts')
       .update({
         status: 'available',
-        purchased_by: null,
+        purchase_by: null,
         purchase_message: null
       })
       .eq('id', giftId);
