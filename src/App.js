@@ -168,7 +168,7 @@ const WeddingGiftList = () => {
 
 
   const loadData = async () => {
-    setLoading(true);
+
 
     const { data, error } = await supabase
       .from('gifts')
@@ -177,13 +177,11 @@ const WeddingGiftList = () => {
     if (error) {
       console.error('SUPABASE ERROR:', error);
       alert('Erro ao carregar presentes');
-      setLoading(false);
       return;
     }
 
     console.log('GIFTS:', data);
     setGifts(data || []);
-    setLoading(false);
   };
 
 
