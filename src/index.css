@@ -65,7 +65,7 @@ header {
   justify-content: center;
   align-items: center;
 
-  background-image: url('../public/s.jpg');
+  background-image: url('../public/s.webp');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -106,7 +106,7 @@ header {
     height: 80px;
   }
   header{
-    background-image: url('../public/sMobile.jpg');
+    background-image: url('../public/sMobile.webp');
   }
 }
 
