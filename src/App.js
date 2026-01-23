@@ -63,7 +63,6 @@ const WeddingGiftList = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [selectedGift, setSelectedGift] = useState(null);
   const [editingGift, setEditingGift] = useState(null);
-  const [loading, setLoading] = useState(true);
   
   const [loginForm, setLoginForm] = useState({ email: '', password: '' });
   const [purchaseForm, setPurchaseForm] = useState({ name: '', message: '' });
