@@ -1028,22 +1028,6 @@ const WeddingGiftList = () => {
     );
   };
 
-  if (loading) {
-    return (
-      <div style={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: colors.lightGray
-      }}>
-        <div style={{ textAlign: 'center' }}>
-          <Heart size={48} color={colors.primary} style={{ marginBottom: '1rem' }} />
-          <p style={{ color: colors.darkGray, fontSize: '1.1rem' }}>Loading...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <Router>
