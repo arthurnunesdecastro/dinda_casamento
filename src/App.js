@@ -19,8 +19,8 @@ const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
 const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
 
 export const supabase = createClient(
-  supabaseUrl,
-  supabaseAnonKey
+  'https://ddpvriwtpgfvvvtfqzzw.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRkcHZyaXd0cGdmdnZ2dGZxenp3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkxODQ5MDgsImV4cCI6MjA4NDc2MDkwOH0.qdouyivqKeWhBOv4LwwAT5pjMM84IrtNeftzJPuLjMs'
 );
 
 
@@ -567,9 +567,28 @@ const WeddingGiftList = () => {
       }}>
         <Gift className='gift' color={colors.primary} style={{ marginBottom: '2rem', marginTop: '3rem', }} />
         <h2>Nossa Lista de Presentes</h2>
+              <div style={{
+        textAlign: 'center',
+        marginBottom: '2rem',
+        padding: '2rem',
+        background: colors.lightGray,
+        borderRadius: '12px'
+      }}>
         <p className='mainDesc'>
           Com o coração transbordando de alegria, queremos dizer que o maior presente para nós é ter vocês ao nosso lado nesse dia tão especial. Cada abraço, sorriso e momento compartilhado tornará o nosso "sim" ainda mais inesquecível.
-          Mas, se além da presença vocês desejarem contribuir para a realização do nosso sonho, ficaremos imensamente gratos. Seguem algumas opções de presentes, como referência, para que possam escolher e adquirir onde acharem mais conveniente.
+          <br></br>
+          Mas, se além da presença vocês desejarem contribuir para a realização do nosso sonho, ficaremos imensamente gratos.
+          Deixamos disponível a chave PIX destinada à nossa lua de mel — um pedacinho do início da nossa vida juntos, que será lembrado com muito carinho em cada detalhe dessa viagem.<br></br>
+          <hr className='space hide'></hr>
+          <PixItem
+            label="Noiva"
+            name="Daiane Leopoldina Nunes"
+            pixKey="06367630996"
+          />
+        </p>     
+      </div>
+        <p className='mainDesc'>
+          Também, se preferirem, seguem algumas opções de presentes, como referência, para que possam escolher e adquirir onde acharem mais conveniente.
           Seguem endereços de entrega: <br></br>
           <hr className='space hide'></hr>
           <LocationItem
@@ -591,39 +610,17 @@ const WeddingGiftList = () => {
       }}>
         {gifts.map(gift => renderGiftCard(gift, false, navigate))}
       </div>
-
+      <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
+        <Heart className='heart' size={48} color={colors.primary} style={{fill: colors.primary }} />
+        <h5>Com amor,</h5>
+        <h2 style={{marginTop: 0}}>Daiane e Cássio </h2>
+      </div>
       {gifts.length === 0 && (
         <div style={{ textAlign: 'center', padding: '4rem 1rem', color: colors.darkGray }}>
           <p>No gifts have been added yet.</p>
         </div>
       )}
-      <div style={{
-        textAlign: 'center',
-        marginBottom: '4rem',
-        padding: '2rem',
-        background: colors.lightGray,
-        borderRadius: '12px'
-      }}>
-        <p className='mainDesc'>
-          E, para quem preferir, também deixamos disponíveis chaves PIX destinadas à nossa lua de mel — um pedacinho do início da nossa vida juntos, que será lembrado com muito carinho em cada detalhe dessa viagem.<br></br>
-          <hr className='space hide'></hr>
-          <PixItem
-            label="Noiva"
-            name="Daiane Leopoldina Nunes"
-            pixKey="06367630996"
-          />
 
-          <PixItem
-            label="Noivo"
-            name="Cássio Figueredo Goulart"
-            pixKey="07884264943"
-          />
-        </p>
-        <Heart className='heart' size={48} color={colors.primary} style={{fill: colors.primary }} />
-        <h5>Com amor,</h5>
-        <h2 style={{marginTop: 0}}>Daiane e Cássio </h2>
-        
-      </div>
     </div>
   );
 
