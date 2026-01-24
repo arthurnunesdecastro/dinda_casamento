@@ -19,8 +19,8 @@ const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
 const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
 
 export const supabase = createClient(
-  'https://ddpvriwtpgfvvvtfqzzw.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRkcHZyaXd0cGdmdnZ2dGZxenp3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkxODQ5MDgsImV4cCI6MjA4NDc2MDkwOH0.qdouyivqKeWhBOv4LwwAT5pjMM84IrtNeftzJPuLjMs'
+  supabaseUrl,
+  supabaseAnonKey
 );
 
 
