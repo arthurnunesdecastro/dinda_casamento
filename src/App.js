@@ -589,16 +589,11 @@ const WeddingGiftList = () => {
       </div>
         <p className='mainDesc'>
           Também, se preferirem, seguem algumas opções de presentes, como referência, para que possam escolher e adquirir onde acharem mais conveniente.
-          Seguem endereços de entrega: <br></br>
+          Segue o endereço de entrega: <br></br>
           <hr className='space hide'></hr>
           <LocationItem
-            label="Endereço 1"
+            label="Endereço"
             address="Rua Pedro Bitencourt, 974, Vila Nova, Imbituba, SC, CEP 88780-000"
-          />
-
-          <LocationItem
-            label="Endereço 2"
-            address="Av. Dr. Nilo Belo, 407, Vila Esperança, Residencial Monza, Ap 24, Tubarão, SC, CEP 88702-030"
           />
         </p>
       </div>
