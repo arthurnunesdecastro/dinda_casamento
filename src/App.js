@@ -57,235 +57,138 @@ const COUPLE_PHOTO = process.env.REACT_APP_COUPLE_PHOTO_URL || '/hero.jpg';
 
 const HeroSection = ({ isAdmin, path, navigate, handleLogout }) => {
   const [visible, setVisible] = useState(false);
-  const [scrollY, setScrollY] = useState(0);
 
   useEffect(() => {
-    const t = setTimeout(() => setVisible(true), 100);
+    // Slight delay for an elegant entrance
+    const t = setTimeout(() => setVisible(true), 150);
     return () => clearTimeout(t);
-  }, []);
-
-  useEffect(() => {
-    let ticking = false;
-    const onScroll = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          setScrollY(window.scrollY);
-          ticking = false;
-        });
-        ticking = true;
-      }
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   const anim = (delay) => ({
     opacity: visible ? 1 : 0,
-    transform: visible ? 'translate3d(0, 0, 0)' : 'translate3d(0, 30px, 0)',
-    transition: `opacity 1.2s cubic-bezier(0.19, 1, 0.22, 1) ${delay}s, transform 1.2s cubic-bezier(0.19, 1, 0.22, 1) ${delay}s`,
+    transform: visible ? 'translateY(0)' : 'translateY(20px)',
+    transition: `opacity 1s cubic-bezier(0.215, 0.61, 0.355, 1) ${delay}s, transform 1s cubic-bezier(0.215, 0.61, 0.355, 1) ${delay}s`,
   });
 
   return (
-    <header className="hero-wrapper">
+    <header className="hero-split">
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@300;400&display=swap');
 
-        /* Reset for the hero context to prevent any overflow leakage */
-        .hero-wrapper {
-          position: relative;
+        /* Master Container - Zero overflow */
+        .hero-split {
+          display: grid;
+          grid-template-columns: 1.1fr 0.9fr;
           width: 100%;
-          height: 100vh;
-          height: 100dvh;
-          background-color: #081119; /* Deepest tone of your palette */
-          overflow: hidden;
-          display: flex;
-          align-items: center;
+          min-height: 100vh;
+          background-color: #0a1622; /* Rich, deep navy */
+          overflow: hidden; 
           box-sizing: border-box;
         }
 
-        /* Full bleed image background with GPU accelerated parallax */
-        .hero-bg {
-          position: absolute;
-          inset: -5%; /* Slight bleed for parallax scaling */
-          z-index: 1;
-          will-change: transform;
-        }
-
-        .hero-bg img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          object-position: 75% center; /* Keeps the couple in frame */
-          display: block;
-        }
-
-        /* Editorial gradient mask: Solid left, transparent right, fade at bottom */
-        .hero-mask {
-          position: absolute;
-          inset: 0;
-          z-index: 2;
-          background: linear-gradient(90deg, #0d1f2d 0%, #0d1f2d 30%, rgba(13,31,45,0.2) 75%, transparent 100%),
-                      linear-gradient(0deg, #0d1f2d 0%, transparent 15%);
-          pointer-events: none;
-        }
-
-        .hero-content {
-          position: relative;
-          z-index: 3;
-          width: 100%;
-          max-width: 1440px;
-          margin: 0 auto;
-          padding: 0 5vw;
-          box-sizing: border-box;
-        }
-
-        .hero-text-container {
-          max-width: 540px;
-        }
-
-        .hero-eyebrow {
-          font-family: 'Jost', sans-serif;
-          font-weight: 300;
-          font-size: 0.65rem;
-          letter-spacing: 0.4em;
-          text-transform: uppercase;
-          color: ${colors.primaryLight};
-          margin: 0 0 2rem 0.2rem;
-        }
-
-        .hero-title-group {
+        /* ── LEFT: Typography Canvas ── */
+        .hero-text-panel {
           display: flex;
           flex-direction: column;
-          margin: 0 0 2rem 0;
+          justify-content: center;
+          padding: 10%;
+          position: relative;
+          z-index: 10;
         }
 
-        .hero-name {
+        .eyebrow {
+          font-family: 'Jost', sans-serif;
+          font-weight: 300;
+          font-size: 0.7rem;
+          letter-spacing: 0.35em;
+          text-transform: uppercase;
+          color: ${colors.primaryLight};
+          margin: 0 0 3rem 0;
+        }
+
+        .name-group {
+          margin-bottom: 3rem;
+        }
+
+        .name {
           font-family: 'Cormorant Garamond', serif;
           font-weight: 300;
-          font-size: clamp(4.5rem, 8vw, 7.5rem);
-          line-height: 0.85;
+          font-size: clamp(4rem, 7vw, 7rem);
+          line-height: 0.9;
           color: #ffffff;
           margin: 0;
-          letter-spacing: -0.02em;
+          letter-spacing: -0.01em;
         }
 
-        .hero-ampersand {
+        .ampersand {
           font-family: 'Cormorant Garamond', serif;
           font-style: italic;
           font-weight: 300;
-          font-size: clamp(2.5rem, 4vw, 3.5rem);
+          font-size: clamp(3rem, 5vw, 4.5rem);
           color: ${colors.gold};
-          margin: 0.5rem 0 0.5rem 0.2rem;
           line-height: 1;
+          margin: 0.5rem 0;
+          display: block;
         }
 
-        .hero-tagline {
+        .tagline {
           font-family: 'Cormorant Garamond', serif;
           font-style: italic;
           font-weight: 300;
           font-size: clamp(1.1rem, 1.5vw, 1.3rem);
-          color: rgba(255, 255, 255, 0.7);
-          line-height: 1.6;
-          margin: 0 0 2.5rem 0;
-          max-width: 400px;
+          color: rgba(255, 255, 255, 0.65);
+          line-height: 1.5;
+          margin: 0 0 3rem 0;
+          max-width: 80%;
         }
 
-        .hero-meta {
+        .date-lockup {
           display: flex;
           align-items: center;
           gap: 1.5rem;
         }
 
-        .hero-divider {
-          width: 40px;
+        .date-line {
+          width: 60px;
           height: 1px;
           background: ${colors.gold};
           transform-origin: left;
-          transition: transform 1.5s cubic-bezier(0.19, 1, 0.22, 1) 0.8s;
           transform: scaleX(${visible ? 1 : 0});
+          transition: transform 1.2s cubic-bezier(0.215, 0.61, 0.355, 1) 0.8s;
         }
 
-        .hero-date {
+        .date-text {
           font-family: 'Jost', sans-serif;
           font-weight: 300;
-          font-size: 0.8rem;
+          font-size: 0.85rem;
           letter-spacing: 0.25em;
           color: rgba(255, 255, 255, 0.8);
-        }
-
-        /* Minimalist Scroll Indicator */
-        .hero-scroll-indicator {
-          position: absolute;
-          bottom: 0;
-          left: 5vw;
-          z-index: 10;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 1rem;
-        }
-
-        .hero-scroll-text {
-          writing-mode: vertical-rl;
-          font-family: 'Jost', sans-serif;
-          font-weight: 300;
-          font-size: 0.55rem;
-          letter-spacing: 0.3em;
-          color: rgba(255, 255, 255, 0.4);
-          text-transform: uppercase;
-        }
-
-        .hero-scroll-line {
-          width: 1px;
-          height: 60px;
-          background: rgba(255, 255, 255, 0.15);
-          position: relative;
-          overflow: hidden;
-        }
-
-        .hero-scroll-line::after {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 50%;
-          background: ${colors.gold};
-          animation: drop 2s cubic-bezier(0.77, 0, 0.175, 1) infinite;
-        }
-
-        @keyframes drop {
-          0% { transform: translateY(-100%); }
-          100% { transform: translateY(200%); }
         }
 
         .admin-nav {
           display: flex;
           gap: 0.75rem;
-          margin-top: 3rem;
-          flex-wrap: wrap;
+          margin-top: 4rem;
         }
 
         .admin-btn {
-          padding: 0.5rem 1.25rem;
+          padding: 0.6rem 1.2rem;
           border: 1px solid rgba(255,255,255,0.15);
-          background: rgba(0,0,0,0.2);
-          backdrop-filter: blur(4px);
-          color: rgba(255,255,255,0.8);
+          background: transparent;
+          color: rgba(255,255,255,0.7);
           font-family: 'Jost', sans-serif;
-          font-weight: 400;
-          font-size: 0.75rem;
+          font-weight: 300;
+          font-size: 0.7rem;
           letter-spacing: 0.15em;
           text-transform: uppercase;
           cursor: pointer;
           transition: all 0.3s ease;
-          border-radius: 4px;
+          border-radius: 2px;
         }
 
         .admin-btn:hover {
-          background: rgba(255,255,255,0.1);
           color: #fff;
-          border-color: rgba(255,255,255,0.3);
+          border-color: rgba(255,255,255,0.4);
         }
 
         .admin-btn.active {
@@ -293,73 +196,82 @@ const HeroSection = ({ isAdmin, path, navigate, handleLogout }) => {
           color: ${colors.primaryLight};
         }
 
-        @media (max-width: 900px) {
-          .hero-mask {
-            background: linear-gradient(0deg, #0d1f2d 0%, #0d1f2d 40%, rgba(13,31,45,0.4) 100%);
+        /* ── RIGHT: Photography Canvas ── */
+        .hero-photo-panel {
+          position: relative;
+          height: 100vh;
+          overflow: hidden;
+        }
+
+        .hero-img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          /* Critical fix: Locks focus to the upper-middle to prevent cutting off heads */
+          object-position: center 15%; 
+          transform: scale(${visible ? 1 : 1.05});
+          transition: transform 2.5s cubic-bezier(0.215, 0.61, 0.355, 1);
+        }
+
+        /* Responsive Breakdowns */
+        @media (max-width: 1024px) {
+          .hero-split {
+            grid-template-columns: 1fr;
+            min-height: auto;
           }
-          .hero-content {
+          .hero-photo-panel {
+            height: 60vh;
+            order: -1; /* Puts photo on top for mobile */
+          }
+          .hero-text-panel {
+            padding: 4rem 2rem;
             align-items: center;
             text-align: center;
-            margin-top: auto;
-            padding-bottom: 4rem;
-            padding-top: 40vh; /* Pushes text below faces on mobile */
           }
-          .hero-text-container { margin: 0 auto; display: flex; flex-direction: column; align-items: center; }
-          .hero-eyebrow { margin-left: 0; }
-          .hero-ampersand { margin-left: 0; }
-          .hero-scroll-indicator { display: none; }
+          .tagline { max-width: 100%; }
+          .date-lockup { flex-direction: column; gap: 1rem; }
+          .date-line { width: 1px; height: 40px; transform-origin: top; transform: scaleY(${visible ? 1 : 0}); }
         }
       `}</style>
 
-      {/* Background & Mask */}
-      <div 
-        className="hero-bg" 
-        style={{ transform: `translate3d(0, ${scrollY * 0.15}px, 0)` }}
-      >
+      {/* LEFT: Clean, structured typography block */}
+      <div className="hero-text-panel">
+        <div style={anim(0.1)} className="eyebrow">Lista de Presentes</div>
+        
+        <div className="name-group">
+          <h1 className="name" style={anim(0.2)}>Daiane</h1>
+          <span className="ampersand" style={anim(0.3)}>&</span>
+          <h1 className="name" style={anim(0.4)}>Cássio</h1>
+        </div>
+
+        <p className="tagline" style={anim(0.5)}>
+          Obrigada por fazerem parte da nossa história.
+        </p>
+
+        <div className="date-lockup" style={anim(0.6)}>
+          <div className="date-line" />
+          <span className="date-text">14 · 11 · 2026</span>
+        </div>
+
+        {isAdmin && (
+          <div className="admin-nav" style={anim(0.7)}>
+            <button className={`admin-btn ${path === '/' ? 'active' : ''}`} onClick={() => navigate('/')}>Lista</button>
+            <button className={`admin-btn ${path === '/dashboard' ? 'active' : ''}`} onClick={() => navigate('/dashboard')}>Dashboard</button>
+            <button className="admin-btn" onClick={() => handleLogout(navigate)} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <LogOut size={12} /> Sair
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* RIGHT: Unobstructed, perfectly framed photo */}
+      <div className="hero-photo-panel">
         <img 
           src={COUPLE_PHOTO} 
           alt="Daiane e Cássio" 
+          className="hero-img"
           onError={(e) => { e.target.style.display = 'none'; }}
         />
-      </div>
-      <div className="hero-mask" />
-
-      {/* Content */}
-      <div className="hero-content">
-        <div className="hero-text-container">
-          <p className="hero-eyebrow" style={anim(0.1)}>Lista de Presentes</p>
-          
-          <div className="hero-title-group">
-            <h1 className="hero-name" style={anim(0.2)}>Daiane</h1>
-            <span className="hero-ampersand" style={anim(0.3)}>&</span>
-            <h1 className="hero-name" style={anim(0.4)}>Cássio</h1>
-          </div>
-
-          <p className="hero-tagline" style={anim(0.5)}>
-            Obrigada por fazerem parte da nossa história.
-          </p>
-
-          <div className="hero-meta" style={anim(0.6)}>
-            <div className="hero-divider" />
-            <span className="hero-date">14 · 11 · 2026</span>
-          </div>
-
-          {isAdmin && (
-            <div className="admin-nav" style={anim(0.7)}>
-              <button className={`admin-btn ${path === '/' ? 'active' : ''}`} onClick={() => navigate('/')}>Lista</button>
-              <button className={`admin-btn ${path === '/dashboard' ? 'active' : ''}`} onClick={() => navigate('/dashboard')}>Dashboard</button>
-              <button className="admin-btn" onClick={() => handleLogout(navigate)} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <LogOut size={14} /> Sair
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Minimalist Scroll Cue */}
-      <div className="hero-scroll-indicator" style={{ opacity: visible ? 1 : 0, transition: 'opacity 1s ease 1.2s' }}>
-        <span className="hero-scroll-text">Descer</span>
-        <div className="hero-scroll-line" />
       </div>
     </header>
   );
