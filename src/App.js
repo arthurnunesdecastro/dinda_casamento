@@ -53,17 +53,14 @@ const colors = {
   text: '#333333'
 };
 
-// Couple photo — same file from uploads; in production swap for your hosted URL
-const COUPLE_PHOTO = 'hero.jpg';
+const COUPLE_PHOTO = process.env.REACT_APP_COUPLE_PHOTO_URL || '/hero.jpg';
 
 const HeroSection = ({ isAdmin, path, navigate, handleLogout }) => {
-  const heroRef = useRef(null);
-  const [scrollY, setScrollY] = useState(0);
   const [visible, setVisible] = useState(false);
+  const [scrollY, setScrollY] = useState(0);
 
   useEffect(() => {
-    // Entrance animation
-    const t = setTimeout(() => setVisible(true), 100);
+    const t = setTimeout(() => setVisible(true), 80);
     return () => clearTimeout(t);
   }, []);
 
@@ -73,298 +70,228 @@ const HeroSection = ({ isAdmin, path, navigate, handleLogout }) => {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const parallaxOffset = scrollY * 0.35;
+  const anim = (delay, extra = {}) => ({
+    opacity: visible ? 1 : 0,
+    transform: visible ? 'translateY(0)' : 'translateY(24px)',
+    transition: `opacity 1.1s cubic-bezier(0.16,1,0.3,1) ${delay}s, transform 1.1s cubic-bezier(0.16,1,0.3,1) ${delay}s`,
+    ...extra,
+  });
 
   return (
-    <header
-      ref={heroRef}
-      style={{
-        position: 'relative',
-        width: '100%',
-        minHeight: '100vh',
-        overflow: 'hidden',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-    >
-      {/* ── Background photo with parallax ── */}
-      <div
-        style={{
-          position: 'absolute',
-          inset: '-10%',
-          backgroundImage: `url(${COUPLE_PHOTO})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center 20%',
-          transform: `translateY(${parallaxOffset}px)`,
-          transition: 'transform 0.05s linear',
-          zIndex: 0,
-        }}
-      />
+    <header style={{
+      position: 'relative',
+      width: '100%',
+      minHeight: '100vh',
+      display: 'grid',
+      gridTemplateColumns: '1fr 1fr',
+      overflow: 'hidden',
+      background: '#0d1f2d',
+    }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,200;0,300;0,400;1,200;1,300;1,400&family=Jost:wght@200;300;400&display=swap');
 
-      {/* ── Cinematic gradient overlay ── */}
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          background: `
-            linear-gradient(
-              to bottom,
-              rgba(20, 42, 58, 0.45) 0%,
-              rgba(20, 42, 58, 0.15) 30%,
-              rgba(20, 42, 58, 0.10) 55%,
-              rgba(20, 42, 58, 0.72) 85%,
-              rgba(20, 42, 58, 0.92) 100%
-            )
-          `,
-          zIndex: 1,
-        }}
-      />
+        @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes lineGrow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+        @keyframes bobDown {
+          0%, 100% { transform: translateX(-50%) translateY(0); }
+          50% { transform: translateX(-50%) translateY(8px); }
+        }
+        @keyframes shimmer {
+          0% { background-position: -200% center; }
+          100% { background-position: 200% center; }
+        }
 
-      {/* ── Subtle vignette on sides ── */}
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          background: `radial-gradient(ellipse at center, transparent 40%, rgba(15,32,46,0.55) 100%)`,
-          zIndex: 2,
-        }}
-      />
+        .hero-left { display: flex; flex-direction: column; justify-content: center; padding: 5rem 5rem 4rem 6rem; position: relative; z-index: 2; }
+        .hero-photo-wrap { position: relative; overflow: hidden; }
+        .hero-photo-wrap img { width: 100%; height: 100%; object-fit: cover; object-position: center bottom; display: block; transform: scale(1.04) translateY(${scrollY * 0.12}px); transition: transform 0.1s linear; }
+        .hero-photo-wrap::before {
+          content: '';
+          position: absolute; inset: 0; z-index: 1;
+          background: linear-gradient(to right, #0d1f2d 0%, rgba(13,31,45,0.3) 30%, transparent 60%);
+          pointer-events: none;
+        }
+        .hero-photo-wrap::after {
+          content: '';
+          position: absolute; inset: 0; z-index: 1;
+          background: linear-gradient(to top, #0d1f2d 0%, transparent 25%);
+          pointer-events: none;
+        }
 
-      {/* ── Decorative top botanical line ── */}
-      <div
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          height: '4px',
-          background: `linear-gradient(to right, transparent, ${colors.primary}, ${colors.gold}, ${colors.primary}, transparent)`,
-          zIndex: 10,
-        }}
-      />
+        .hero-eyebrow {
+          font-family: 'Jost', sans-serif;
+          font-weight: 200;
+          font-size: 0.72rem;
+          letter-spacing: 0.35em;
+          text-transform: uppercase;
+          color: ${colors.primary};
+          margin: 0 0 2.2rem 0;
+        }
 
-      {/* ── Content wrapper ── */}
-      <div
-        style={{
-          position: 'relative',
-          zIndex: 5,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          padding: '5rem 2rem 4rem',
-          width: '100%',
-          maxWidth: '1200px',
-          margin: '0 auto',
-        }}
-      >
-        {/* Date pill */}
-        <div
-          style={{
-            opacity: visible ? 1 : 0,
-            transform: visible ? 'translateY(0)' : 'translateY(20px)',
-            transition: 'opacity 0.9s ease 0.1s, transform 0.9s ease 0.1s',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            background: 'rgba(255,255,255,0.12)',
-            backdropFilter: 'blur(8px)',
-            border: '1px solid rgba(255,255,255,0.22)',
-            borderRadius: '100px',
-            padding: '0.4rem 1.2rem',
-            marginBottom: '2.5rem',
-          }}
-        >
-          <span style={{
-            fontFamily: "'Cormorant Garamond', 'Georgia', serif",
-            fontSize: '0.95rem',
-            letterSpacing: '0.18em',
-            color: 'rgba(255,255,255,0.85)',
-            fontStyle: 'italic',
-          }}>
-            14 · 11 · 2026
-          </span>
-        </div>
+        .hero-name {
+          font-family: 'Cormorant Garamond', Georgia, serif;
+          font-weight: 200;
+          font-size: clamp(4rem, 6vw, 6.5rem);
+          line-height: 0.92;
+          color: #fff;
+          margin: 0;
+          letter-spacing: -0.01em;
+        }
+        .hero-name.italic { font-style: italic; color: rgba(255,255,255,0.82); }
 
-        {/* Names */}
-        <h1
-          style={{
-            opacity: visible ? 1 : 0,
-            transform: visible ? 'translateY(0)' : 'translateY(30px)',
-            transition: 'opacity 1s ease 0.3s, transform 1s ease 0.3s',
-            fontFamily: "'Cormorant Garamond', 'Playfair Display', Georgia, serif",
-            fontSize: 'clamp(3.2rem, 8vw, 7rem)',
-            fontWeight: 300,
-            color: colors.white,
-            margin: 0,
-            textAlign: 'center',
-            lineHeight: 1.05,
-            letterSpacing: '0.02em',
-            textShadow: '0 2px 40px rgba(0,0,0,0.4)',
-          }}
-        >
-          Daiane
-        </h1>
+        .hero-ampersand {
+          font-family: 'Cormorant Garamond', Georgia, serif;
+          font-style: italic;
+          font-weight: 200;
+          font-size: 2.2rem;
+          color: ${colors.gold};
+          margin: 0.6rem 0;
+          line-height: 1;
+          display: block;
+        }
 
-        {/* Ampersand divider */}
-        <div
-          style={{
-            opacity: visible ? 1 : 0,
-            transform: visible ? 'scale(1)' : 'scale(0.6)',
-            transition: 'opacity 0.9s ease 0.5s, transform 0.9s ease 0.5s',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '1.5rem',
-            margin: '0.4rem 0',
-          }}
-        >
-          <div style={{ height: '1px', width: '60px', background: `linear-gradient(to right, transparent, ${colors.gold})` }} />
-          <Heart
-            size={20}
-            style={{ color: colors.gold, fill: colors.gold, filter: 'drop-shadow(0 0 6px rgba(212,175,55,0.6))' }}
-          />
-          <div style={{ height: '1px', width: '60px', background: `linear-gradient(to left, transparent, ${colors.gold})` }} />
-        </div>
+        .hero-divider {
+          width: 56px;
+          height: 1px;
+          background: ${colors.gold};
+          margin: 2.4rem 0;
+          transform-origin: left;
+          animation: ${visible ? 'lineGrow 1s cubic-bezier(0.16,1,0.3,1) 0.9s both' : 'none'};
+        }
 
-        <h1
-          style={{
-            opacity: visible ? 1 : 0,
-            transform: visible ? 'translateY(0)' : 'translateY(30px)',
-            transition: 'opacity 1s ease 0.55s, transform 1s ease 0.55s',
-            fontFamily: "'Cormorant Garamond', 'Playfair Display', Georgia, serif",
-            fontSize: 'clamp(3.2rem, 8vw, 7rem)',
-            fontWeight: 300,
-            color: colors.white,
-            margin: 0,
-            textAlign: 'center',
-            lineHeight: 1.05,
-            letterSpacing: '0.02em',
-            textShadow: '0 2px 40px rgba(0,0,0,0.4)',
-          }}
-        >
-          Cássio
-        </h1>
+        .hero-tagline {
+          font-family: 'Cormorant Garamond', Georgia, serif;
+          font-style: italic;
+          font-weight: 300;
+          font-size: clamp(1.05rem, 1.4vw, 1.2rem);
+          color: rgba(255,255,255,0.58);
+          margin: 0 0 3rem 0;
+          line-height: 1.7;
+          max-width: 340px;
+        }
 
-        {/* Tagline */}
-        <p
-          style={{
-            opacity: visible ? 1 : 0,
-            transform: visible ? 'translateY(0)' : 'translateY(20px)',
-            transition: 'opacity 1s ease 0.75s, transform 1s ease 0.75s',
-            fontFamily: "'Cormorant Garamond', Georgia, serif",
-            fontSize: 'clamp(1rem, 2.2vw, 1.25rem)',
-            fontWeight: 400,
-            fontStyle: 'italic',
-            color: 'rgba(255,255,255,0.78)',
-            margin: '2rem 0 0',
-            textAlign: 'center',
-            letterSpacing: '0.04em',
-            maxWidth: '480px',
-          }}
-        >
-          Obrigada por fazerem parte da nossa história.
+        .hero-date-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          border: 1px solid rgba(255,255,255,0.14);
+          border-radius: 2px;
+          padding: 0.55rem 1.1rem;
+          font-family: 'Jost', sans-serif;
+          font-weight: 200;
+          font-size: 0.8rem;
+          letter-spacing: 0.22em;
+          color: rgba(255,255,255,0.55);
+          width: fit-content;
+        }
+
+        .hero-scroll-cue {
+          position: absolute;
+          bottom: 2.5rem;
+          left: 50%;
+          transform: translateX(-50%);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 0.6rem;
+          z-index: 10;
+          animation: bobDown 2.4s ease-in-out infinite;
+          opacity: ${visible ? 0.5 : 0};
+          transition: opacity 1s ease 1.8s;
+        }
+        .hero-scroll-cue span {
+          font-family: 'Jost', sans-serif;
+          font-weight: 200;
+          font-size: 0.62rem;
+          letter-spacing: 0.28em;
+          text-transform: uppercase;
+          color: rgba(255,255,255,0.6);
+        }
+        .hero-scroll-cue svg { display: block; }
+
+        .admin-nav-btn {
+          padding: 0.45rem 1.1rem;
+          border: 1px solid rgba(255,255,255,0.18);
+          background: transparent;
+          color: rgba(255,255,255,0.6);
+          font-family: 'Jost', sans-serif;
+          font-weight: 300;
+          font-size: 0.78rem;
+          letter-spacing: 0.12em;
+          cursor: pointer;
+          transition: all 0.2s;
+          border-radius: 2px;
+        }
+        .admin-nav-btn:hover { background: rgba(255,255,255,0.08); color: #fff; }
+        .admin-nav-btn.active { border-color: ${colors.primary}; color: ${colors.primary}; }
+
+        @media (max-width: 768px) {
+          header { grid-template-columns: 1fr !important; }
+          .hero-photo-wrap { height: 55vh; }
+          .hero-left { padding: 3rem 2rem 2rem !important; }
+          .hero-name { font-size: clamp(3.5rem, 14vw, 5rem) !important; }
+        }
+      `}</style>
+
+      {/* ── LEFT: Text panel ── */}
+      <div className="hero-left">
+
+        {/* Eyebrow */}
+        <p className="hero-eyebrow" style={anim(0.1)}>
+          Lista de Presentes
         </p>
 
-        {/* Admin nav (only when logged in) */}
+        {/* Names */}
+        <div style={anim(0.25)}>
+          <h1 className="hero-name">Daiane</h1>
+          <span className="hero-ampersand">&amp;</span>
+          <h1 className="hero-name italic">Cássio</h1>
+        </div>
+
+        {/* Gold divider line */}
+        <div className="hero-divider" />
+
+        {/* Tagline */}
+        <p className="hero-tagline" style={anim(0.55)}>
+          Obrigada por fazerem parte<br />da nossa história.
+        </p>
+
+        {/* Date badge */}
+        <div className="hero-date-badge" style={anim(0.7)}>
+          <span style={{ color: colors.gold, fontSize: '0.6rem' }}>✦</span>
+          14 · 11 · 2026
+          <span style={{ color: colors.gold, fontSize: '0.6rem' }}>✦</span>
+        </div>
+
+        {/* Admin nav */}
         {isAdmin && (
-          <div
-            style={{
-              opacity: visible ? 1 : 0,
-              transition: 'opacity 0.8s ease 1s',
-              marginTop: '2.5rem',
-              display: 'flex',
-              gap: '0.75rem',
-              justifyContent: 'center',
-              flexWrap: 'wrap',
-            }}
-          >
-            {[
-              { label: 'Lista', path: '/' },
-              { label: 'Dashboard', path: '/dashboard' },
-            ].map(({ label, path: p }) => (
-              <button
-                key={p}
-                onClick={() => navigate(p)}
-                style={{
-                  padding: '0.5rem 1.4rem',
-                  background: path === p ? 'rgba(136,179,206,0.35)' : 'rgba(255,255,255,0.12)',
-                  border: `1px solid ${path === p ? colors.primary : 'rgba(255,255,255,0.25)'}`,
-                  color: colors.white,
-                  borderRadius: '100px',
-                  cursor: 'pointer',
-                  fontSize: '0.88rem',
-                  letterSpacing: '0.05em',
-                  backdropFilter: 'blur(8px)',
-                  transition: 'all 0.25s',
-                  fontFamily: "'Cormorant Garamond', Georgia, serif",
-                }}
-              >
-                {label}
-              </button>
-            ))}
-            <button
-              onClick={() => handleLogout(navigate)}
-              style={{
-                padding: '0.5rem 1.4rem',
-                background: 'rgba(255,255,255,0.10)',
-                border: '1px solid rgba(255,255,255,0.22)',
-                color: 'rgba(255,255,255,0.75)',
-                borderRadius: '100px',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                fontSize: '0.88rem',
-                backdropFilter: 'blur(8px)',
-                transition: 'all 0.25s',
-              }}
-            >
-              <LogOut size={14} /> Sair
+          <div style={{ ...anim(0.85), display: 'flex', gap: '0.6rem', marginTop: '2rem', flexWrap: 'wrap' }}>
+            <button className={`admin-nav-btn${path === '/' ? ' active' : ''}`} onClick={() => navigate('/')}>Lista</button>
+            <button className={`admin-nav-btn${path === '/dashboard' ? ' active' : ''}`} onClick={() => navigate('/dashboard')}>Dashboard</button>
+            <button className="admin-nav-btn" onClick={() => handleLogout(navigate)}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <LogOut size={12} /> Sair
             </button>
           </div>
         )}
-
-        {/* Scroll cue */}
-        <div
-          style={{
-            opacity: visible ? 1 : 0,
-            transition: 'opacity 1s ease 1.4s',
-            position: 'absolute',
-            bottom: '2.5rem',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '0.5rem',
-          }}
-        >
-          <span style={{
-            fontFamily: "'Cormorant Garamond', Georgia, serif",
-            fontSize: '0.75rem',
-            letterSpacing: '0.2em',
-            color: 'rgba(255,255,255,0.5)',
-            textTransform: 'uppercase',
-          }}>
-            Rolar
-          </span>
-          <div style={{
-            width: '1px',
-            height: '40px',
-            background: `linear-gradient(to bottom, rgba(255,255,255,0.5), transparent)`,
-            animation: 'scrollPulse 2s ease-in-out infinite',
-          }} />
-        </div>
       </div>
 
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap');
-        @keyframes scrollPulse {
-          0%, 100% { opacity: 0.5; transform: scaleY(1); }
-          50% { opacity: 1; transform: scaleY(1.15); }
-        }
-      `}</style>
+      {/* ── RIGHT: Photo ── */}
+      <div className="hero-photo-wrap">
+        <img
+          src={COUPLE_PHOTO}
+          alt="Daiane e Cássio"
+          onError={(e) => { e.target.style.display = 'none'; }}
+        />
+      </div>
+
+      {/* ── Scroll cue (centered across both columns) ── */}
+      <div className="hero-scroll-cue">
+        <span>Descer</span>
+        <svg width="16" height="24" viewBox="0 0 16 24" fill="none">
+          <line x1="8" y1="0" x2="8" y2="18" stroke="rgba(255,255,255,0.5)" strokeWidth="1"/>
+          <polyline points="3,14 8,20 13,14" stroke="rgba(255,255,255,0.5)" strokeWidth="1" fill="none"/>
+        </svg>
+      </div>
     </header>
   );
 };
