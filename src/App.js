@@ -60,237 +60,306 @@ const HeroSection = ({ isAdmin, path, navigate, handleLogout }) => {
   const [scrollY, setScrollY] = useState(0);
 
   useEffect(() => {
-    const t = setTimeout(() => setVisible(true), 80);
+    const t = setTimeout(() => setVisible(true), 100);
     return () => clearTimeout(t);
   }, []);
 
   useEffect(() => {
-    const onScroll = () => setScrollY(window.scrollY);
+    let ticking = false;
+    const onScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setScrollY(window.scrollY);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const anim = (delay, extra = {}) => ({
+  const anim = (delay) => ({
     opacity: visible ? 1 : 0,
-    transform: visible ? 'translateY(0)' : 'translateY(24px)',
-    transition: `opacity 1.1s cubic-bezier(0.16,1,0.3,1) ${delay}s, transform 1.1s cubic-bezier(0.16,1,0.3,1) ${delay}s`,
-    ...extra,
+    transform: visible ? 'translate3d(0, 0, 0)' : 'translate3d(0, 30px, 0)',
+    transition: `opacity 1.2s cubic-bezier(0.19, 1, 0.22, 1) ${delay}s, transform 1.2s cubic-bezier(0.19, 1, 0.22, 1) ${delay}s`,
   });
 
   return (
-    <header style={{
-      position: 'relative',
-      width: '100%',
-      minHeight: '100vh',
-      display: 'grid',
-      gridTemplateColumns: '1fr 1fr',
-      overflow: 'hidden',
-      background: '#0d1f2d',
-    }}>
+    <header className="hero-wrapper">
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,200;0,300;0,400;1,200;1,300;1,400&family=Jost:wght@200;300;400&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@300;400&display=swap');
 
-        @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
-        @keyframes lineGrow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-        @keyframes bobDown {
-          0%, 100% { transform: translateX(-50%) translateY(0); }
-          50% { transform: translateX(-50%) translateY(8px); }
-        }
-        @keyframes shimmer {
-          0% { background-position: -200% center; }
-          100% { background-position: 200% center; }
+        /* Reset for the hero context to prevent any overflow leakage */
+        .hero-wrapper {
+          position: relative;
+          width: 100%;
+          height: 100vh;
+          height: 100dvh;
+          background-color: #081119; /* Deepest tone of your palette */
+          overflow: hidden;
+          display: flex;
+          align-items: center;
+          box-sizing: border-box;
         }
 
-        .hero-left { display: flex; flex-direction: column; justify-content: center; padding: 5rem 5rem 4rem 6rem; position: relative; z-index: 2; }
-        .hero-photo-wrap { position: relative; overflow: hidden; }
-        .hero-photo-wrap img { width: 100%; height: 100%; object-fit: cover; object-position: center bottom; display: block; transform: scale(1.04) translateY(${scrollY * 0.12}px); transition: transform 0.1s linear; }
-        .hero-photo-wrap::before {
-          content: '';
-          position: absolute; inset: 0; z-index: 1;
-          background: linear-gradient(to right, #0d1f2d 0%, rgba(13,31,45,0.3) 30%, transparent 60%);
+        /* Full bleed image background with GPU accelerated parallax */
+        .hero-bg {
+          position: absolute;
+          inset: -5%; /* Slight bleed for parallax scaling */
+          z-index: 1;
+          will-change: transform;
+        }
+
+        .hero-bg img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          object-position: 75% center; /* Keeps the couple in frame */
+          display: block;
+        }
+
+        /* Editorial gradient mask: Solid left, transparent right, fade at bottom */
+        .hero-mask {
+          position: absolute;
+          inset: 0;
+          z-index: 2;
+          background: linear-gradient(90deg, #0d1f2d 0%, #0d1f2d 30%, rgba(13,31,45,0.2) 75%, transparent 100%),
+                      linear-gradient(0deg, #0d1f2d 0%, transparent 15%);
           pointer-events: none;
         }
-        .hero-photo-wrap::after {
-          content: '';
-          position: absolute; inset: 0; z-index: 1;
-          background: linear-gradient(to top, #0d1f2d 0%, transparent 25%);
-          pointer-events: none;
+
+        .hero-content {
+          position: relative;
+          z-index: 3;
+          width: 100%;
+          max-width: 1440px;
+          margin: 0 auto;
+          padding: 0 5vw;
+          box-sizing: border-box;
+        }
+
+        .hero-text-container {
+          max-width: 540px;
         }
 
         .hero-eyebrow {
           font-family: 'Jost', sans-serif;
-          font-weight: 200;
-          font-size: 0.72rem;
-          letter-spacing: 0.35em;
+          font-weight: 300;
+          font-size: 0.65rem;
+          letter-spacing: 0.4em;
           text-transform: uppercase;
-          color: ${colors.primary};
-          margin: 0 0 2.2rem 0;
+          color: ${colors.primaryLight};
+          margin: 0 0 2rem 0.2rem;
+        }
+
+        .hero-title-group {
+          display: flex;
+          flex-direction: column;
+          margin: 0 0 2rem 0;
         }
 
         .hero-name {
-          font-family: 'Cormorant Garamond', Georgia, serif;
-          font-weight: 200;
-          font-size: clamp(4rem, 6vw, 6.5rem);
-          line-height: 0.92;
-          color: #fff;
+          font-family: 'Cormorant Garamond', serif;
+          font-weight: 300;
+          font-size: clamp(4.5rem, 8vw, 7.5rem);
+          line-height: 0.85;
+          color: #ffffff;
           margin: 0;
-          letter-spacing: -0.01em;
+          letter-spacing: -0.02em;
         }
-        .hero-name.italic { font-style: italic; color: rgba(255,255,255,0.82); }
 
         .hero-ampersand {
-          font-family: 'Cormorant Garamond', Georgia, serif;
+          font-family: 'Cormorant Garamond', serif;
           font-style: italic;
-          font-weight: 200;
-          font-size: 2.2rem;
+          font-weight: 300;
+          font-size: clamp(2.5rem, 4vw, 3.5rem);
           color: ${colors.gold};
-          margin: 0.6rem 0;
+          margin: 0.5rem 0 0.5rem 0.2rem;
           line-height: 1;
-          display: block;
-        }
-
-        .hero-divider {
-          width: 56px;
-          height: 1px;
-          background: ${colors.gold};
-          margin: 2.4rem 0;
-          transform-origin: left;
-          animation: ${visible ? 'lineGrow 1s cubic-bezier(0.16,1,0.3,1) 0.9s both' : 'none'};
         }
 
         .hero-tagline {
-          font-family: 'Cormorant Garamond', Georgia, serif;
+          font-family: 'Cormorant Garamond', serif;
           font-style: italic;
           font-weight: 300;
-          font-size: clamp(1.05rem, 1.4vw, 1.2rem);
-          color: rgba(255,255,255,0.58);
-          margin: 0 0 3rem 0;
-          line-height: 1.7;
-          max-width: 340px;
+          font-size: clamp(1.1rem, 1.5vw, 1.3rem);
+          color: rgba(255, 255, 255, 0.7);
+          line-height: 1.6;
+          margin: 0 0 2.5rem 0;
+          max-width: 400px;
         }
 
-        .hero-date-badge {
-          display: inline-flex;
+        .hero-meta {
+          display: flex;
           align-items: center;
-          gap: 0.5rem;
-          border: 1px solid rgba(255,255,255,0.14);
-          border-radius: 2px;
-          padding: 0.55rem 1.1rem;
-          font-family: 'Jost', sans-serif;
-          font-weight: 200;
-          font-size: 0.8rem;
-          letter-spacing: 0.22em;
-          color: rgba(255,255,255,0.55);
-          width: fit-content;
+          gap: 1.5rem;
         }
 
-        .hero-scroll-cue {
+        .hero-divider {
+          width: 40px;
+          height: 1px;
+          background: ${colors.gold};
+          transform-origin: left;
+          transition: transform 1.5s cubic-bezier(0.19, 1, 0.22, 1) 0.8s;
+          transform: scaleX(${visible ? 1 : 0});
+        }
+
+        .hero-date {
+          font-family: 'Jost', sans-serif;
+          font-weight: 300;
+          font-size: 0.8rem;
+          letter-spacing: 0.25em;
+          color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* Minimalist Scroll Indicator */
+        .hero-scroll-indicator {
           position: absolute;
-          bottom: 2.5rem;
-          left: 50%;
-          transform: translateX(-50%);
+          bottom: 0;
+          left: 5vw;
+          z-index: 10;
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 0.6rem;
-          z-index: 10;
-          animation: bobDown 2.4s ease-in-out infinite;
-          opacity: ${visible ? 0.5 : 0};
-          transition: opacity 1s ease 1.8s;
+          gap: 1rem;
         }
-        .hero-scroll-cue span {
-          font-family: 'Jost', sans-serif;
-          font-weight: 200;
-          font-size: 0.62rem;
-          letter-spacing: 0.28em;
-          text-transform: uppercase;
-          color: rgba(255,255,255,0.6);
-        }
-        .hero-scroll-cue svg { display: block; }
 
-        .admin-nav-btn {
-          padding: 0.45rem 1.1rem;
-          border: 1px solid rgba(255,255,255,0.18);
-          background: transparent;
-          color: rgba(255,255,255,0.6);
+        .hero-scroll-text {
+          writing-mode: vertical-rl;
           font-family: 'Jost', sans-serif;
           font-weight: 300;
-          font-size: 0.78rem;
-          letter-spacing: 0.12em;
-          cursor: pointer;
-          transition: all 0.2s;
-          border-radius: 2px;
+          font-size: 0.55rem;
+          letter-spacing: 0.3em;
+          color: rgba(255, 255, 255, 0.4);
+          text-transform: uppercase;
         }
-        .admin-nav-btn:hover { background: rgba(255,255,255,0.08); color: #fff; }
-        .admin-nav-btn.active { border-color: ${colors.primary}; color: ${colors.primary}; }
 
-        @media (max-width: 768px) {
-          header { grid-template-columns: 1fr !important; }
-          .hero-photo-wrap { height: 55vh; }
-          .hero-left { padding: 3rem 2rem 2rem !important; }
-          .hero-name { font-size: clamp(3.5rem, 14vw, 5rem) !important; }
+        .hero-scroll-line {
+          width: 1px;
+          height: 60px;
+          background: rgba(255, 255, 255, 0.15);
+          position: relative;
+          overflow: hidden;
+        }
+
+        .hero-scroll-line::after {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 50%;
+          background: ${colors.gold};
+          animation: drop 2s cubic-bezier(0.77, 0, 0.175, 1) infinite;
+        }
+
+        @keyframes drop {
+          0% { transform: translateY(-100%); }
+          100% { transform: translateY(200%); }
+        }
+
+        .admin-nav {
+          display: flex;
+          gap: 0.75rem;
+          margin-top: 3rem;
+          flex-wrap: wrap;
+        }
+
+        .admin-btn {
+          padding: 0.5rem 1.25rem;
+          border: 1px solid rgba(255,255,255,0.15);
+          background: rgba(0,0,0,0.2);
+          backdrop-filter: blur(4px);
+          color: rgba(255,255,255,0.8);
+          font-family: 'Jost', sans-serif;
+          font-weight: 400;
+          font-size: 0.75rem;
+          letter-spacing: 0.15em;
+          text-transform: uppercase;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          border-radius: 4px;
+        }
+
+        .admin-btn:hover {
+          background: rgba(255,255,255,0.1);
+          color: #fff;
+          border-color: rgba(255,255,255,0.3);
+        }
+
+        .admin-btn.active {
+          border-color: ${colors.primary};
+          color: ${colors.primaryLight};
+        }
+
+        @media (max-width: 900px) {
+          .hero-mask {
+            background: linear-gradient(0deg, #0d1f2d 0%, #0d1f2d 40%, rgba(13,31,45,0.4) 100%);
+          }
+          .hero-content {
+            align-items: center;
+            text-align: center;
+            margin-top: auto;
+            padding-bottom: 4rem;
+            padding-top: 40vh; /* Pushes text below faces on mobile */
+          }
+          .hero-text-container { margin: 0 auto; display: flex; flex-direction: column; align-items: center; }
+          .hero-eyebrow { margin-left: 0; }
+          .hero-ampersand { margin-left: 0; }
+          .hero-scroll-indicator { display: none; }
         }
       `}</style>
 
-      {/* ── LEFT: Text panel ── */}
-      <div className="hero-left">
-
-        {/* Eyebrow */}
-        <p className="hero-eyebrow" style={anim(0.1)}>
-          Lista de Presentes
-        </p>
-
-        {/* Names */}
-        <div style={anim(0.25)}>
-          <h1 className="hero-name">Daiane</h1>
-          <span className="hero-ampersand">&amp;</span>
-          <h1 className="hero-name italic">Cássio</h1>
-        </div>
-
-        {/* Gold divider line */}
-        <div className="hero-divider" />
-
-        {/* Tagline */}
-        <p className="hero-tagline" style={anim(0.55)}>
-          Obrigada por fazerem parte<br />da nossa história.
-        </p>
-
-        {/* Date badge */}
-        <div className="hero-date-badge" style={anim(0.7)}>
-          <span style={{ color: colors.gold, fontSize: '0.6rem' }}>✦</span>
-          14 · 11 · 2026
-          <span style={{ color: colors.gold, fontSize: '0.6rem' }}>✦</span>
-        </div>
-
-        {/* Admin nav */}
-        {isAdmin && (
-          <div style={{ ...anim(0.85), display: 'flex', gap: '0.6rem', marginTop: '2rem', flexWrap: 'wrap' }}>
-            <button className={`admin-nav-btn${path === '/' ? ' active' : ''}`} onClick={() => navigate('/')}>Lista</button>
-            <button className={`admin-nav-btn${path === '/dashboard' ? ' active' : ''}`} onClick={() => navigate('/dashboard')}>Dashboard</button>
-            <button className="admin-nav-btn" onClick={() => handleLogout(navigate)}
-              style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-              <LogOut size={12} /> Sair
-            </button>
-          </div>
-        )}
-      </div>
-
-      {/* ── RIGHT: Photo ── */}
-      <div className="hero-photo-wrap">
-        <img
-          src={COUPLE_PHOTO}
-          alt="Daiane e Cássio"
+      {/* Background & Mask */}
+      <div 
+        className="hero-bg" 
+        style={{ transform: `translate3d(0, ${scrollY * 0.15}px, 0)` }}
+      >
+        <img 
+          src={COUPLE_PHOTO} 
+          alt="Daiane e Cássio" 
           onError={(e) => { e.target.style.display = 'none'; }}
         />
       </div>
+      <div className="hero-mask" />
 
-      {/* ── Scroll cue (centered across both columns) ── */}
-      <div className="hero-scroll-cue">
-        <span>Descer</span>
-        <svg width="16" height="24" viewBox="0 0 16 24" fill="none">
-          <line x1="8" y1="0" x2="8" y2="18" stroke="rgba(255,255,255,0.5)" strokeWidth="1"/>
-          <polyline points="3,14 8,20 13,14" stroke="rgba(255,255,255,0.5)" strokeWidth="1" fill="none"/>
-        </svg>
+      {/* Content */}
+      <div className="hero-content">
+        <div className="hero-text-container">
+          <p className="hero-eyebrow" style={anim(0.1)}>Lista de Presentes</p>
+          
+          <div className="hero-title-group">
+            <h1 className="hero-name" style={anim(0.2)}>Daiane</h1>
+            <span className="hero-ampersand" style={anim(0.3)}>&</span>
+            <h1 className="hero-name" style={anim(0.4)}>Cássio</h1>
+          </div>
+
+          <p className="hero-tagline" style={anim(0.5)}>
+            Obrigada por fazerem parte da nossa história.
+          </p>
+
+          <div className="hero-meta" style={anim(0.6)}>
+            <div className="hero-divider" />
+            <span className="hero-date">14 · 11 · 2026</span>
+          </div>
+
+          {isAdmin && (
+            <div className="admin-nav" style={anim(0.7)}>
+              <button className={`admin-btn ${path === '/' ? 'active' : ''}`} onClick={() => navigate('/')}>Lista</button>
+              <button className={`admin-btn ${path === '/dashboard' ? 'active' : ''}`} onClick={() => navigate('/dashboard')}>Dashboard</button>
+              <button className="admin-btn" onClick={() => handleLogout(navigate)} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <LogOut size={14} /> Sair
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Minimalist Scroll Cue */}
+      <div className="hero-scroll-indicator" style={{ opacity: visible ? 1 : 0, transition: 'opacity 1s ease 1.2s' }}>
+        <span className="hero-scroll-text">Descer</span>
+        <div className="hero-scroll-line" />
       </div>
     </header>
   );
