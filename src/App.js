@@ -59,73 +59,59 @@ const HeroSection = ({ isAdmin, path, navigate, handleLogout }) => {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    // 100ms delay ensures fonts render before the animation triggers
     const t = setTimeout(() => setVisible(true), 100);
     return () => clearTimeout(t);
   }, []);
 
   const anim = (delay) => ({
     opacity: visible ? 1 : 0,
-    transform: visible ? 'translateY(0)' : 'translateY(30px)',
+    transform: visible ? 'translateY(0)' : 'translateY(24px)',
     transition: `opacity 1.2s cubic-bezier(0.19, 1, 0.22, 1) ${delay}s, transform 1.2s cubic-bezier(0.19, 1, 0.22, 1) ${delay}s`,
   });
 
   return (
-    <header className="hero-cinematic">
+    <header className="hero-cinematic-locked">
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@200;300;400&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap');
 
-        /* Master Container */
-        .hero-cinematic {
+        /* MASTER WRAPPER: 
+          Forcing the dark theme and breaking out of any global padding/margins 
+        */
+        .hero-cinematic-locked {
           position: relative;
           width: 100%;
           height: 100vh;
           height: 100dvh;
-          background-color: #050b11; /* Ultra-deep midnight navy */
-          display: flex;
+          min-height: 700px;
+          background-color: #050b11 !important; /* Force override floral background */
+          display: grid;
+          grid-template-columns: 1fr 1fr;
           overflow: hidden;
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
         }
 
-        /* ── VERTICAL EDITORIAL TEXT ── */
-        .hero-vertical-label {
-          position: absolute;
-          left: 2vw;
-          top: 50%;
-          transform: translateY(-50%) rotate(-180deg);
-          writing-mode: vertical-rl;
-          font-family: 'Jost', sans-serif;
-          font-weight: 300;
-          font-size: 0.65rem;
-          letter-spacing: 0.5em;
-          color: rgba(255, 255, 255, 0.25);
-          text-transform: uppercase;
-          z-index: 20;
-          opacity: ${visible ? 1 : 0};
-          transition: opacity 2s ease 1s;
-        }
-
-        /* ── LEFT: Typography Canvas ── */
-        .hero-left {
+        /* ── LEFT: Typography Canvas (Strict Dark Isolation) ── */
+        .hero-left-canvas {
+          background-color: #050b11 !important; /* Double-lock the background */
           position: relative;
           z-index: 10;
-          width: 50%;
-          height: 100%;
           display: flex;
           flex-direction: column;
           justify-content: center;
-          padding: 0 5% 0 10%;
-          box-sizing: border-box;
+          padding: 0 10% 0 15%;
         }
 
         .eyebrow-container {
           display: flex;
           align-items: center;
           gap: 1rem;
-          margin-bottom: 2rem;
+          margin-bottom: 2.5rem;
         }
 
         .eyebrow-line {
-          width: 30px;
+          width: 40px;
           height: 1px;
           background: ${colors.gold};
           transform-origin: left;
@@ -135,14 +121,16 @@ const HeroSection = ({ isAdmin, path, navigate, handleLogout }) => {
 
         .eyebrow {
           font-family: 'Jost', sans-serif;
-          font-weight: 300;
-          font-size: 0.7rem;
+          font-weight: 400;
+          font-size: 0.65rem;
           letter-spacing: 0.4em;
           text-transform: uppercase;
-          color: ${colors.primaryLight};
+          color: ${colors.gold};
         }
 
         .names-wrapper {
+          display: flex;
+          flex-direction: column;
           margin-bottom: 2.5rem;
         }
 
@@ -161,10 +149,9 @@ const HeroSection = ({ isAdmin, path, navigate, handleLogout }) => {
           font-style: italic;
           font-weight: 300;
           font-size: clamp(3rem, 4.5vw, 4rem);
-          color: rgba(255, 255, 255, 0.4);
-          line-height: 0.5;
-          margin: 1.5rem 0 1.5rem 0.5rem;
-          display: block;
+          color: rgba(255, 255, 255, 0.3);
+          line-height: 0.8;
+          margin: 0.5rem 0 0.5rem 0.2rem;
         }
 
         .tagline {
@@ -172,46 +159,85 @@ const HeroSection = ({ isAdmin, path, navigate, handleLogout }) => {
           font-style: italic;
           font-weight: 300;
           font-size: clamp(1.2rem, 1.5vw, 1.4rem);
-          color: rgba(255, 255, 255, 0.7);
+          color: rgba(255, 255, 255, 0.65);
           line-height: 1.6;
-          margin: 0 0 3.5rem 0;
-          max-width: 420px;
+          margin: 0 0 4rem 0;
+          max-width: 90%;
         }
 
-        /* Structured Metadata (The "More Beautiful" element) */
-        .meta-grid {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 2rem;
-          max-width: 400px;
-          border-left: 1px solid rgba(255, 255, 255, 0.1);
+        /* High-End Metadata Block */
+        .meta-container {
+          display: flex;
+          gap: 4rem;
+          border-left: 1px solid rgba(255, 255, 255, 0.15);
           padding-left: 1.5rem;
         }
 
-        .meta-item {
+        .meta-block {
           display: flex;
           flex-direction: column;
-          gap: 0.4rem;
+          gap: 0.5rem;
         }
 
         .meta-label {
           font-family: 'Jost', sans-serif;
-          font-weight: 400;
+          font-weight: 500;
           font-size: 0.55rem;
           letter-spacing: 0.3em;
           text-transform: uppercase;
-          color: ${colors.gold};
+          color: rgba(255, 255, 255, 0.4);
         }
 
         .meta-value {
-          font-family: 'Cormorant Garamond', serif;
-          font-style: italic;
-          font-size: 1.1rem;
-          color: rgba(255, 255, 255, 0.85);
-          line-height: 1.2;
+          font-family: 'Jost', sans-serif;
+          font-weight: 300;
+          font-size: 0.95rem;
+          letter-spacing: 0.1em;
+          color: #ffffff;
+          line-height: 1.4;
         }
 
-        /* Admin Controls */
+        /* ── RIGHT: Image Canvas with Structural Fade ── */
+        .hero-right-canvas {
+          position: relative;
+          width: 100%;
+          height: 100%;
+          overflow: hidden;
+        }
+
+        /* THE FADE: 
+          Anchored to the right container, expanding outward. 
+          Uses the exact background hex of the left canvas for a seamless weld.
+        */
+        .hero-right-canvas::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(90deg, #050b11 0%, rgba(5,11,17,0.7) 20%, transparent 50%);
+          z-index: 2;
+          pointer-events: none;
+        }
+
+        /* Top and Bottom vignetting for true cinematic framing */
+        .hero-right-canvas::after {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(180deg, #050b11 0%, transparent 15%, transparent 85%, #050b11 100%);
+          z-index: 2;
+          pointer-events: none;
+        }
+
+        .hero-img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          object-position: center 20%;
+          transform: scale(${visible ? 1 : 1.05});
+          transition: transform 3.5s cubic-bezier(0.19, 1, 0.22, 1);
+          z-index: 1;
+        }
+
         .admin-nav {
           display: flex;
           gap: 0.75rem;
@@ -220,10 +246,9 @@ const HeroSection = ({ isAdmin, path, navigate, handleLogout }) => {
 
         .admin-btn {
           padding: 0.6rem 1.2rem;
-          border: 1px solid rgba(255,255,255,0.1);
-          background: rgba(0,0,0,0.2);
-          backdrop-filter: blur(8px);
-          color: rgba(255,255,255,0.6);
+          border: 1px solid rgba(255,255,255,0.15);
+          background: transparent;
+          color: rgba(255,255,255,0.7);
           font-family: 'Jost', sans-serif;
           font-weight: 300;
           font-size: 0.7rem;
@@ -244,68 +269,37 @@ const HeroSection = ({ isAdmin, path, navigate, handleLogout }) => {
           color: ${colors.primaryLight};
         }
 
-        /* ── RIGHT: Image Canvas & Fade ── */
-        .hero-right {
-          position: absolute;
-          top: 0;
-          right: 0;
-          width: 58%; /* Intentionally wider to slide under the text for the fade */
-          height: 100vh;
-          z-index: 1;
-          overflow: hidden;
-        }
-
-        /* The Seamless Ethereal Fade */
-        .hero-right::after {
-          content: '';
-          position: absolute;
-          inset: 0;
-          /* Matches the #050b11 background, fading out to reveal the image */
-          background: linear-gradient(to right, #050b11 0%, rgba(5,11,17,0.85) 15%, transparent 45%);
-          pointer-events: none;
-        }
-
-        .hero-img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          object-position: center 25%;
-          transform: scale(${visible ? 1 : 1.08});
-          transition: transform 3.5s cubic-bezier(0.19, 1, 0.22, 1);
-        }
-
         /* Mobile Adjustments */
-        @media (max-width: 900px) {
-          .hero-cinematic {
-            flex-direction: column;
-            overflow-y: auto;
-          }
-          .hero-vertical-label { display: none; }
-          .hero-left {
-            width: 100%;
+        @media (max-width: 1024px) {
+          .hero-cinematic-locked {
+            grid-template-columns: 1fr;
+            grid-template-rows: 60vh 1fr; /* Image on top, text on bottom */
             height: auto;
-            padding: 4rem 2rem;
-            order: 2; /* Puts text below image */
           }
-          .hero-right {
-            position: relative;
-            width: 100%;
-            height: 60vh;
+          
+          .hero-left-canvas {
+            padding: 4rem 2rem;
+            order: 2;
+          }
+
+          .hero-right-canvas {
             order: 1;
           }
-          /* Change the fade direction for mobile */
-          .hero-right::after {
-            background: linear-gradient(to bottom, transparent 60%, #050b11 100%);
+
+          /* Flip the gradient fade for mobile vertical stacking */
+          .hero-right-canvas::before {
+            background: linear-gradient(180deg, transparent 50%, rgba(5,11,17,0.8) 80%, #050b11 100%);
           }
-          .meta-grid { margin-top: 1rem; border-left: none; padding-left: 0; }
+          .hero-right-canvas::after {
+            background: linear-gradient(0deg, transparent 80%, #050b11 100%);
+          }
+          
+          .meta-container { gap: 2rem; }
         }
       `}</style>
 
-      {/* Vertical Side Accent */}
-      <div className="hero-vertical-label">Lista de Presentes</div>
-
-      {/* LEFT: Typography & Details */}
-      <div className="hero-left">
+      {/* LEFT: Typography Canvas */}
+      <div className="hero-left-canvas">
         <div className="eyebrow-container" style={anim(0.1)}>
           <div className="eyebrow-line" />
           <span className="eyebrow">Celebre Conosco</span>
@@ -321,15 +315,15 @@ const HeroSection = ({ isAdmin, path, navigate, handleLogout }) => {
           Obrigada por fazerem parte da nossa história e do nosso sonho.
         </p>
 
-        {/* Structured Editorial Metadata Block */}
-        <div className="meta-grid" style={anim(0.6)}>
-          <div className="meta-item">
+        {/* Clean, Sans-Serif Metadata Block */}
+        <div className="meta-container" style={anim(0.6)}>
+          <div className="meta-block">
             <span className="meta-label">Data</span>
-            <span className="meta-value">14 de Novembro<br/>2026</span>
+            <span className="meta-value">14. 11. 2026</span>
           </div>
-          <div className="meta-item">
+          <div className="meta-block">
             <span className="meta-label">Local</span>
-            <span className="meta-value">Imbituba<br/>Santa Catarina</span>
+            <span className="meta-value">Imbituba, SC</span>
           </div>
         </div>
 
@@ -344,8 +338,8 @@ const HeroSection = ({ isAdmin, path, navigate, handleLogout }) => {
         )}
       </div>
 
-      {/* RIGHT: Photography & Gradient Fade */}
-      <div className="hero-right">
+      {/* RIGHT: Image Canvas */}
+      <div className="hero-right-canvas">
         <img 
           src={COUPLE_PHOTO} 
           alt="Daiane e Cássio" 
