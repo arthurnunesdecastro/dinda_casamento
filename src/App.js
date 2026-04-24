@@ -57,305 +57,440 @@ const COUPLE_PHOTO = process.env.REACT_APP_COUPLE_PHOTO_URL || '/hero.jpg';
 
 const HeroSection = ({ isAdmin, path, navigate, handleLogout }) => {
   const [visible, setVisible] = useState(false);
-
+ 
   useEffect(() => {
-    const t = setTimeout(() => setVisible(true), 100);
+    const t = setTimeout(() => setVisible(true), 80);
     return () => clearTimeout(t);
   }, []);
-
-  const anim = (delay) => ({
-    opacity: visible ? 1 : 0,
-    transform: visible ? 'translateY(0)' : 'translateY(24px)',
-    transition: `opacity 1.2s cubic-bezier(0.19, 1, 0.22, 1) ${delay}s, transform 1.2s cubic-bezier(0.19, 1, 0.22, 1) ${delay}s`,
-  });
-
+ 
   return (
-    <header className="hero-cinematic-locked">
+    <header style={{ position: 'relative', width: '100%', overflow: 'hidden', background: '#050b11' }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap');
-
-        /* ── THE NUKE: Absolute wrapper immune to global flex/grid ── */
-        .hero-cinematic-locked {
-          position: relative !important;
-          display: block !important; /* Force block to kill global grid/flex wrappers */
-          width: 100% !important;
-          height: 100vh !important;
-          min-height: 700px !important;
-          margin: 0 !important;
-          padding: 0 !important;
-          overflow: hidden !important;
-          background-color: #050b11 !important;
-          box-sizing: border-box !important;
-        }
-
-        /* ── LEFT CANVAS: Pinned absolute to force 100% height ── */
-        .hero-left-canvas {
-          position: absolute !important;
-          top: 0 !important;
-          left: 0 !important;
-          width: 50% !important;
-          height: 100% !important;
-          background-color: #050b11 !important;
-          z-index: 10 !important;
-          display: flex !important;
-          flex-direction: column !important;
-          justify-content: center !important;
-          padding: 0 5% 0 10% !important;
-          box-sizing: border-box !important;
-          margin: 0 !important;
-        }
-
-        .eyebrow-container {
+ 
+        /* ─── HERO SHELL ─── */
+        .hero-shell {
+          position: relative;
+          width: 100%;
+          height: 100vh;
+          min-height: 600px;
+          max-height: 960px;
           display: flex;
-          align-items: center;
-          gap: 1rem;
-          margin-bottom: 2.5rem;
+          align-items: stretch;
+          overflow: hidden;
+          background: #050b11;
         }
-
-        .eyebrow-line {
-          width: 40px;
-          height: 1px;
-          background: ${colors.gold};
-          transform-origin: left;
-          transform: scaleX(${visible ? 1 : 0});
-          transition: transform 1s cubic-bezier(0.19, 1, 0.22, 1) 0.6s;
-        }
-
-        .eyebrow {
-          font-family: 'Jost', sans-serif;
-          font-weight: 400;
-          font-size: 0.65rem;
-          letter-spacing: 0.4em;
-          text-transform: uppercase;
-          color: ${colors.gold};
-        }
-
-        .names-wrapper {
-          display: flex;
-          flex-direction: column;
-          margin-bottom: 2.5rem;
-        }
-
-        .name {
-          font-family: 'Cormorant Garamond', serif;
-          font-weight: 300;
-          font-size: clamp(4.5rem, 7vw, 7.5rem);
-          line-height: 0.85;
-          color: #ffffff;
-          margin: 0;
-          letter-spacing: -0.02em;
-        }
-
-        .ampersand {
-          font-family: 'Cormorant Garamond', serif;
-          font-style: italic;
-          font-weight: 300;
-          font-size: clamp(3rem, 4.5vw, 4rem);
-          color: rgba(255, 255, 255, 0.3);
-          line-height: 0.8;
-          margin: 0.5rem 0 0.5rem 0.2rem;
-        }
-
-        .tagline {
-          font-family: 'Cormorant Garamond', serif;
-          font-style: italic;
-          font-weight: 300;
-          font-size: clamp(1.2rem, 1.5vw, 1.4rem);
-          color: rgba(255, 255, 255, 0.65);
-          line-height: 1.6;
-          margin: 0 0 4rem 0;
-          max-width: 90%;
-        }
-
-        /* High-End Metadata Block */
-        .meta-container {
-          display: flex;
-          gap: 4rem;
-          border-left: 1px solid rgba(255, 255, 255, 0.15);
-          padding-left: 1.5rem;
-        }
-
-        .meta-block {
-          display: flex;
-          flex-direction: column;
-          gap: 0.5rem;
-        }
-
-        .meta-label {
-          font-family: 'Jost', sans-serif;
-          font-weight: 500;
-          font-size: 0.55rem;
-          letter-spacing: 0.3em;
-          text-transform: uppercase;
-          color: rgba(255, 255, 255, 0.4);
-        }
-
-        .meta-value {
-          font-family: 'Jost', sans-serif;
-          font-weight: 300;
-          font-size: 0.95rem;
-          letter-spacing: 0.1em;
-          color: #ffffff;
-          line-height: 1.4;
-        }
-
-        /* ── RIGHT CANVAS: Pinned Absolute ── */
-        .hero-right-canvas {
+ 
+        /* ─── IMAGE PANEL ─── */
+        .hero-img-panel {
           position: absolute !important;
           top: 0 !important;
           right: 0 !important;
-          width: 58% !important; /* Deliberately wide so it slides under the left canvas */
+          width: 55% !important;
           height: 100% !important;
-          overflow: hidden !important;
           z-index: 1 !important;
-          margin: 0 !important;
-          padding: 0 !important;
+          overflow: hidden !important;
         }
-
-        /* The Seamless Mask */
-        .hero-right-canvas::before {
-          content: '';
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(90deg, #050b11 0%, rgba(5,11,17,0.7) 25%, transparent 55%);
-          z-index: 2;
-          pointer-events: none;
-        }
-
-        .hero-right-canvas::after {
-          content: '';
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(180deg, #050b11 0%, transparent 15%, transparent 85%, #050b11 100%);
-          z-index: 2;
-          pointer-events: none;
-        }
-
-        .hero-img {
+ 
+        .hero-img-panel img {
           width: 100%;
           height: 100%;
           object-fit: cover;
-          object-position: center 20%;
-          transform: scale(${visible ? 1 : 1.05});
-          transition: transform 3.5s cubic-bezier(0.19, 1, 0.22, 1);
-          z-index: 1;
+          object-position: center 15%;
           display: block;
+          animation: heroZoom 7s cubic-bezier(0.19,1,0.22,1) forwards;
         }
-
-        .admin-nav {
+ 
+        @keyframes heroZoom {
+          from { transform: scale(1.07); }
+          to   { transform: scale(1.00); }
+        }
+ 
+        /* Left gradient fade (the key fix) */
+        .hero-img-panel::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(
+            to right,
+            #050b11 0%,
+            rgba(5,11,17,0.80) 20%,
+            rgba(5,11,17,0.25) 50%,
+            transparent 72%,
+            #050b11 100%
+          );
+          z-index: 2;
+          pointer-events: none;
+        }
+ 
+        /* Top & bottom vignette */
+        .hero-img-panel::after {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(
+            to bottom,
+            #050b11 0%,
+            transparent 12%,
+            transparent 84%,
+            #050b11 100%
+          );
+          z-index: 2;
+          pointer-events: none;
+        }
+ 
+        /* ─── CONTENT PANEL ─── */
+        .hero-content {
+          position: relative;
+          z-index: 10;
           display: flex;
-          gap: 0.75rem;
-          margin-top: 4rem;
+          flex-direction: column;
+          justify-content: center;
+          padding: 0 4% 0 8%;
+          width: 54%;
+          min-width: 0;
         }
-
-        .admin-btn {
-          padding: 0.6rem 1.2rem;
-          border: 1px solid rgba(255,255,255,0.15);
-          background: transparent;
-          color: rgba(255,255,255,0.7);
+ 
+        /* ─── EYEBROW ─── */
+        .hero-eyebrow {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          margin-bottom: 2.6rem;
+        }
+ 
+        .hero-eyebrow__line {
+          width: 36px;
+          height: 1px;
+          background: ${colors.gold};
+          transform-origin: left;
+          transform: scaleX(0);
+          transition: transform 1s cubic-bezier(0.19,1,0.22,1) 0.5s;
+          flex-shrink: 0;
+        }
+ 
+        .hero-eyebrow__line.visible {
+          transform: scaleX(1);
+        }
+ 
+        .hero-eyebrow__text {
+          font-family: 'Jost', sans-serif;
+          font-weight: 400;
+          font-size: 0.6rem;
+          letter-spacing: 0.45em;
+          text-transform: uppercase;
+          color: ${colors.gold};
+        }
+ 
+        /* ─── NAMES ─── */
+        .hero-name {
+          font-family: 'Cormorant Garamond', serif;
+          font-weight: 300;
+          font-size: clamp(4rem, 6.5vw, 7.2rem);
+          line-height: 0.88;
+          color: #ffffff;
+          letter-spacing: -0.02em;
+          display: block;
+          margin: 0;
+        }
+ 
+        .hero-ampersand {
+          font-family: 'Cormorant Garamond', serif;
+          font-style: italic;
+          font-weight: 300;
+          font-size: clamp(2.4rem, 3.8vw, 3.6rem);
+          color: rgba(255,255,255,0.22);
+          line-height: 0.9;
+          display: block;
+          margin: 0.45rem 0 0.45rem 0.15em;
+        }
+ 
+        /* ─── DIVIDER ─── */
+        .hero-divider {
+          width: 48px;
+          height: 1px;
+          background: rgba(212,175,55,0.35);
+          margin: 2rem 0;
+        }
+ 
+        /* ─── TAGLINE ─── */
+        .hero-tagline {
+          font-family: 'Cormorant Garamond', serif;
+          font-style: italic;
+          font-weight: 300;
+          font-size: clamp(1.05rem, 1.3vw, 1.25rem);
+          color: rgba(255,255,255,0.52);
+          line-height: 1.75;
+          margin: 0 0 3rem 0;
+          max-width: 420px;
+        }
+ 
+        /* ─── META ─── */
+        .hero-meta {
+          display: flex;
+          padding-left: 1.25rem;
+          border-left: 1px solid rgba(255,255,255,0.12);
+        }
+ 
+        .hero-meta__item {
+          display: flex;
+          flex-direction: column;
+          gap: 0.4rem;
+        }
+ 
+        .hero-meta__item + .hero-meta__item {
+          margin-left: 3.5rem;
+        }
+ 
+        .hero-meta__label {
+          font-family: 'Jost', sans-serif;
+          font-weight: 500;
+          font-size: 0.52rem;
+          letter-spacing: 0.35em;
+          text-transform: uppercase;
+          color: rgba(255,255,255,0.32);
+        }
+ 
+        .hero-meta__value {
           font-family: 'Jost', sans-serif;
           font-weight: 300;
-          font-size: 0.7rem;
-          letter-spacing: 0.15em;
+          font-size: 0.9rem;
+          letter-spacing: 0.12em;
+          color: #ffffff;
+        }
+ 
+        /* ─── ADMIN NAV ─── */
+        .hero-admin-nav {
+          display: flex;
+          gap: 0.75rem;
+          margin-top: 3.5rem;
+          flex-wrap: wrap;
+        }
+ 
+        .hero-admin-btn {
+          padding: 0.55rem 1.15rem;
+          border: 1px solid rgba(255,255,255,0.14);
+          background: transparent;
+          color: rgba(255,255,255,0.6);
+          font-family: 'Jost', sans-serif;
+          font-weight: 300;
+          font-size: 0.68rem;
+          letter-spacing: 0.18em;
           text-transform: uppercase;
           cursor: pointer;
-          transition: all 0.3s ease;
+          transition: all 0.25s ease;
           border-radius: 2px;
+          display: flex;
+          align-items: center;
+          gap: 0.4rem;
         }
-
-        .admin-btn:hover {
+ 
+        .hero-admin-btn:hover {
           color: #fff;
-          border-color: rgba(255,255,255,0.4);
+          border-color: rgba(255,255,255,0.38);
         }
-
-        .admin-btn.active {
+ 
+        .hero-admin-btn.active {
           border-color: ${colors.primary};
           color: ${colors.primaryLight};
         }
-
-        /* Mobile Adjustments: Switching Absolute to Relative Flow safely */
-        @media (max-width: 1024px) {
-          .hero-cinematic-locked {
-            display: flex !important;
-            flex-direction: column !important;
-            height: auto !important;
-            min-height: 100vh !important;
+ 
+        /* ─── SCROLL HINT ─── */
+        .hero-scroll-hint {
+          position: absolute;
+          bottom: 2.5rem;
+          left: 8%;
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          z-index: 10;
+        }
+ 
+        .hero-scroll-hint__line {
+          width: 24px;
+          height: 1px;
+          background: rgba(255,255,255,0.18);
+        }
+ 
+        .hero-scroll-hint__text {
+          font-family: 'Jost', sans-serif;
+          font-size: 0.52rem;
+          letter-spacing: 0.42em;
+          text-transform: uppercase;
+          color: rgba(255,255,255,0.28);
+        }
+ 
+        /* ─── CORNER ORNAMENT ─── */
+        .hero-ornament {
+          position: absolute;
+          bottom: 2rem;
+          right: 2.2rem;
+          z-index: 10;
+          opacity: 0.35;
+        }
+ 
+        /* ─── FADE-UP ANIMATION CLASSES ─── */
+        .fade-up {
+          opacity: 0;
+          transform: translateY(18px);
+          transition: opacity 1.1s cubic-bezier(0.19,1,0.22,1), transform 1.1s cubic-bezier(0.19,1,0.22,1);
+        }
+ 
+        .fade-up.visible {
+          opacity: 1;
+          transform: translateY(0);
+        }
+ 
+        /* ─── MOBILE ─── */
+        @media (max-width: 900px) {
+          .hero-shell {
+            flex-direction: column;
+            height: auto;
+            max-height: none;
+            min-height: 100svh;
           }
-          
-          .hero-left-canvas {
+ 
+          .hero-img-panel {
             position: relative !important;
             width: 100% !important;
-            height: auto !important;
-            padding: 4rem 2rem !important;
-            order: 2 !important; /* Stack text at the bottom */
+            height: 55vw !important;
+            min-height: 260px !important;
+            max-height: 420px !important;
           }
-
-          .hero-right-canvas {
-            position: relative !important;
-            width: 100% !important;
-            height: 60vh !important;
-            order: 1 !important; /* Stack image at the top */
+ 
+          .hero-img-panel::before {
+            background: linear-gradient(
+              to bottom,
+              transparent 40%,
+              rgba(5,11,17,0.65) 75%,
+              #050b11 100%
+            );
           }
-
-          .hero-right-canvas::before {
-            background: linear-gradient(180deg, transparent 50%, rgba(5,11,17,0.8) 80%, #050b11 100%);
+ 
+          .hero-content {
+            width: 100%;
+            padding: 2.5rem 6% 4rem;
           }
-          .hero-right-canvas::after {
-            background: linear-gradient(0deg, transparent 80%, #050b11 100%);
-          }
-          
-          .meta-container { gap: 2rem; }
+ 
+          .hero-name { font-size: clamp(3.2rem, 14vw, 5rem) !important; }
+          .hero-ampersand { font-size: clamp(2rem, 8vw, 3rem) !important; }
+ 
+          .hero-meta__item + .hero-meta__item { margin-left: 2.5rem; }
+ 
+          .hero-scroll-hint, .hero-ornament { display: none; }
         }
       `}</style>
-
-      {/* LEFT: Typography Canvas */}
-      <div className="hero-left-canvas">
-        <div className="eyebrow-container" style={anim(0.1)}>
-          <div className="eyebrow-line" />
-          <span className="eyebrow">Celebre Conosco</span>
+ 
+      <div className="hero-shell">
+ 
+        {/* ── IMAGE PANEL ── */}
+        <div className="hero-img-panel">
+          <img
+            src={COUPLE_PHOTO}
+            alt="Daiane e Cássio"
+            onError={(e) => { e.target.style.display = 'none'; }}
+          />
         </div>
-        
-        <div className="names-wrapper">
-          <h1 className="name" style={anim(0.2)}>Daiane</h1>
-          <span className="ampersand" style={anim(0.3)}>&</span>
-          <h1 className="name" style={anim(0.4)}>Cássio</h1>
+ 
+        {/* ── CONTENT PANEL ── */}
+        <div className="hero-content">
+ 
+          {/* Eyebrow */}
+          <div className="hero-eyebrow">
+            <div className={`hero-eyebrow__line ${visible ? 'visible' : ''}`} />
+            <span className="hero-eyebrow__text">Celebre Conosco</span>
+          </div>
+ 
+          {/* Names */}
+          <div style={{ marginBottom: '2rem' }}>
+            <span
+              className={`hero-name fade-up ${visible ? 'visible' : ''}`}
+              style={{ transitionDelay: '0.2s' }}
+            >Daiane</span>
+            <span
+              className={`hero-ampersand fade-up ${visible ? 'visible' : ''}`}
+              style={{ transitionDelay: '0.35s' }}
+            >&</span>
+            <span
+              className={`hero-name fade-up ${visible ? 'visible' : ''}`}
+              style={{ transitionDelay: '0.5s' }}
+            >Cássio</span>
+          </div>
+ 
+          {/* Divider */}
+          <div
+            className={`hero-divider fade-up ${visible ? 'visible' : ''}`}
+            style={{ transitionDelay: '0.65s' }}
+          />
+ 
+          {/* Tagline */}
+          <p
+            className={`hero-tagline fade-up ${visible ? 'visible' : ''}`}
+            style={{ transitionDelay: '0.78s' }}
+          >
+            Obrigada por fazerem parte da nossa história e do nosso sonho.
+          </p>
+ 
+          {/* Meta */}
+          <div
+            className={`hero-meta fade-up ${visible ? 'visible' : ''}`}
+            style={{ transitionDelay: '0.92s' }}
+          >
+            <div className="hero-meta__item">
+              <span className="hero-meta__label">Data</span>
+              <span className="hero-meta__value">14 · 11 · 2026</span>
+            </div>
+            <div className="hero-meta__item">
+              <span className="hero-meta__label">Local</span>
+              <span className="hero-meta__value">Imbituba, SC</span>
+            </div>
+          </div>
+ 
+          {/* Admin nav */}
+          {isAdmin && (
+            <div
+              className={`hero-admin-nav fade-up ${visible ? 'visible' : ''}`}
+              style={{ transitionDelay: '1.05s' }}
+            >
+              <button
+                className={`hero-admin-btn ${path === '/' ? 'active' : ''}`}
+                onClick={() => navigate('/')}
+              >Lista</button>
+              <button
+                className={`hero-admin-btn ${path === '/dashboard' ? 'active' : ''}`}
+                onClick={() => navigate('/dashboard')}
+              >Dashboard</button>
+              <button
+                className="hero-admin-btn"
+                onClick={() => handleLogout(navigate)}
+              >
+                <LogOut size={11} /> Sair
+              </button>
+            </div>
+          )}
         </div>
-
-        <p className="tagline" style={anim(0.5)}>
-          Obrigada por fazerem parte da nossa história e do nosso sonho.
-        </p>
-
-        {/* Clean, Sans-Serif Metadata Block */}
-        <div className="meta-container" style={anim(0.6)}>
-          <div className="meta-block">
-            <span className="meta-label">Data</span>
-            <span className="meta-value">14. 11. 2026</span>
-          </div>
-          <div className="meta-block">
-            <span className="meta-label">Local</span>
-            <span className="meta-value">Imbituba, SC</span>
-          </div>
+ 
+        {/* Scroll hint */}
+        <div
+          className={`hero-scroll-hint fade-up ${visible ? 'visible' : ''}`}
+          style={{ transitionDelay: '1.4s' }}
+        >
+          <div className="hero-scroll-hint__line" />
+          <span className="hero-scroll-hint__text">Scroll</span>
         </div>
-
-        {isAdmin && (
-          <div className="admin-nav" style={anim(0.7)}>
-            <button className={`admin-btn ${path === '/' ? 'active' : ''}`} onClick={() => navigate('/')}>Lista</button>
-            <button className={`admin-btn ${path === '/dashboard' ? 'active' : ''}`} onClick={() => navigate('/dashboard')}>Dashboard</button>
-            <button className="admin-btn" onClick={() => handleLogout(navigate)} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-              <LogOut size={12} /> Sair
-            </button>
-          </div>
-        )}
-      </div>
-
-      {/* RIGHT: Image Canvas */}
-      <div className="hero-right-canvas">
-        <img 
-          src={COUPLE_PHOTO} 
-          alt="Daiane e Cássio" 
-          className="hero-img"
-          onError={(e) => { e.target.style.display = 'none'; }}
-        />
+ 
+        {/* Corner ornament */}
+        <div className="hero-ornament">
+          <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
+            <circle cx="22" cy="22" r="21" stroke={colors.gold} strokeWidth="0.5" />
+            <circle cx="22" cy="22" r="2.5" fill={colors.gold} />
+            <line x1="22" y1="1" x2="22" y2="9" stroke={colors.gold} strokeWidth="0.5" />
+            <line x1="22" y1="35" x2="22" y2="43" stroke={colors.gold} strokeWidth="0.5" />
+            <line x1="1" y1="22" x2="9" y2="22" stroke={colors.gold} strokeWidth="0.5" />
+            <line x1="35" y1="22" x2="43" y2="22" stroke={colors.gold} strokeWidth="0.5" />
+          </svg>
+        </div>
+ 
       </div>
     </header>
   );
