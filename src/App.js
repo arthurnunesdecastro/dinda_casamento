@@ -59,31 +59,33 @@ const HeroSection = ({ isAdmin, path, navigate, handleLogout }) => {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    // Slight delay for an elegant entrance
     const t = setTimeout(() => setVisible(true), 150);
     return () => clearTimeout(t);
   }, []);
 
   const anim = (delay) => ({
     opacity: visible ? 1 : 0,
-    transform: visible ? 'translateY(0)' : 'translateY(20px)',
-    transition: `opacity 1s cubic-bezier(0.215, 0.61, 0.355, 1) ${delay}s, transform 1s cubic-bezier(0.215, 0.61, 0.355, 1) ${delay}s`,
+    transform: visible ? 'translateY(0)' : 'translateY(24px)',
+    transition: `opacity 1.2s cubic-bezier(0.19, 1, 0.22, 1) ${delay}s, transform 1.2s cubic-bezier(0.19, 1, 0.22, 1) ${delay}s`,
   });
 
   return (
-    <header className="hero-split">
+    <header className="hero-fine-art">
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@300;400&display=swap');
 
-        /* Master Container - Zero overflow */
-        .hero-split {
+        /* Master Container - Transparent to let your floral background show */
+        .hero-fine-art {
           display: grid;
-          grid-template-columns: 1.1fr 0.9fr;
+          grid-template-columns: 1fr 1fr;
           width: 100%;
           min-height: 100vh;
-          background-color: #0a1622; /* Rich, deep navy */
-          overflow: hidden; 
           box-sizing: border-box;
+          padding: 4vw 6vw;
+          gap: 4vw;
+          align-items: center;
+          position: relative;
+          z-index: 10;
         }
 
         /* ── LEFT: Typography Canvas ── */
@@ -91,33 +93,31 @@ const HeroSection = ({ isAdmin, path, navigate, handleLogout }) => {
           display: flex;
           flex-direction: column;
           justify-content: center;
-          padding: 10%;
-          position: relative;
-          z-index: 10;
+          padding-left: 4vw;
         }
 
         .eyebrow {
           font-family: 'Jost', sans-serif;
-          font-weight: 300;
-          font-size: 0.7rem;
-          letter-spacing: 0.35em;
+          font-weight: 400;
+          font-size: 0.65rem;
+          letter-spacing: 0.4em;
           text-transform: uppercase;
-          color: ${colors.primaryLight};
-          margin: 0 0 3rem 0;
+          color: #64748b; /* Slate gray/blue to complement leaves */
+          margin: 0 0 2.5rem 0.2rem;
         }
 
         .name-group {
-          margin-bottom: 3rem;
+          margin-bottom: 2.5rem;
         }
 
         .name {
           font-family: 'Cormorant Garamond', serif;
-          font-weight: 300;
-          font-size: clamp(4rem, 7vw, 7rem);
-          line-height: 0.9;
-          color: #ffffff;
+          font-weight: 400;
+          font-size: clamp(4.5rem, 7vw, 7.5rem);
+          line-height: 0.85;
+          color: #0f172a; /* Very deep navy, almost black */
           margin: 0;
-          letter-spacing: -0.01em;
+          letter-spacing: -0.02em;
         }
 
         .ampersand {
@@ -126,7 +126,7 @@ const HeroSection = ({ isAdmin, path, navigate, handleLogout }) => {
           font-weight: 300;
           font-size: clamp(3rem, 5vw, 4.5rem);
           color: ${colors.gold};
-          line-height: 1;
+          line-height: 0.8;
           margin: 0.5rem 0;
           display: block;
         }
@@ -134,12 +134,12 @@ const HeroSection = ({ isAdmin, path, navigate, handleLogout }) => {
         .tagline {
           font-family: 'Cormorant Garamond', serif;
           font-style: italic;
-          font-weight: 300;
-          font-size: clamp(1.1rem, 1.5vw, 1.3rem);
-          color: rgba(255, 255, 255, 0.65);
-          line-height: 1.5;
+          font-weight: 400;
+          font-size: clamp(1.2rem, 1.5vw, 1.4rem);
+          color: #334155;
+          line-height: 1.6;
           margin: 0 0 3rem 0;
-          max-width: 80%;
+          max-width: 85%;
         }
 
         .date-lockup {
@@ -149,20 +149,20 @@ const HeroSection = ({ isAdmin, path, navigate, handleLogout }) => {
         }
 
         .date-line {
-          width: 60px;
+          width: 50px;
           height: 1px;
           background: ${colors.gold};
           transform-origin: left;
           transform: scaleX(${visible ? 1 : 0});
-          transition: transform 1.2s cubic-bezier(0.215, 0.61, 0.355, 1) 0.8s;
+          transition: transform 1.2s cubic-bezier(0.19, 1, 0.22, 1) 0.8s;
         }
 
         .date-text {
           font-family: 'Jost', sans-serif;
-          font-weight: 300;
-          font-size: 0.85rem;
+          font-weight: 400;
+          font-size: 0.8rem;
           letter-spacing: 0.25em;
-          color: rgba(255, 255, 255, 0.8);
+          color: #475569;
         }
 
         .admin-nav {
@@ -173,50 +173,66 @@ const HeroSection = ({ isAdmin, path, navigate, handleLogout }) => {
 
         .admin-btn {
           padding: 0.6rem 1.2rem;
-          border: 1px solid rgba(255,255,255,0.15);
-          background: transparent;
-          color: rgba(255,255,255,0.7);
+          border: 1px solid #cbd5e1;
+          background: rgba(255,255,255,0.5);
+          backdrop-filter: blur(4px);
+          color: #475569;
           font-family: 'Jost', sans-serif;
-          font-weight: 300;
+          font-weight: 400;
           font-size: 0.7rem;
           letter-spacing: 0.15em;
           text-transform: uppercase;
           cursor: pointer;
           transition: all 0.3s ease;
-          border-radius: 2px;
+          border-radius: 4px;
         }
 
         .admin-btn:hover {
-          color: #fff;
-          border-color: rgba(255,255,255,0.4);
+          color: #0f172a;
+          border-color: #94a3b8;
+          background: rgba(255,255,255,0.8);
         }
 
         .admin-btn.active {
           border-color: ${colors.primary};
-          color: ${colors.primaryLight};
+          color: ${colors.primaryDark};
         }
 
         /* ── RIGHT: Photography Canvas ── */
         .hero-photo-panel {
           position: relative;
-          height: 100vh;
+          height: 85vh; /* Gives breathing room around the image */
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .hero-photo-wrapper {
+          width: 100%;
+          height: 100%;
+          border-radius: 12px; /* Soft, premium corners */
           overflow: hidden;
+          box-shadow: 0 24px 48px rgba(15, 23, 42, 0.12); /* Elegant, soft drop shadow */
+          transform: translateY(${visible ? '0' : '30px'});
+          opacity: ${visible ? 1 : 0};
+          transition: all 1.4s cubic-bezier(0.19, 1, 0.22, 1) 0.2s;
         }
 
         .hero-img {
           width: 100%;
           height: 100%;
           object-fit: cover;
-          /* Critical fix: Locks focus to the upper-middle to prevent cutting off heads */
-          object-position: center 15%; 
+          object-position: center 20%; /* Keeps faces in frame */
           transform: scale(${visible ? 1 : 1.05});
-          transition: transform 2.5s cubic-bezier(0.215, 0.61, 0.355, 1);
+          transition: transform 3s cubic-bezier(0.19, 1, 0.22, 1);
         }
 
         /* Responsive Breakdowns */
         @media (max-width: 1024px) {
-          .hero-split {
+          .hero-fine-art {
             grid-template-columns: 1fr;
+            padding: 20px;
+            gap: 2rem;
             min-height: auto;
           }
           .hero-photo-panel {
@@ -224,7 +240,8 @@ const HeroSection = ({ isAdmin, path, navigate, handleLogout }) => {
             order: -1; /* Puts photo on top for mobile */
           }
           .hero-text-panel {
-            padding: 4rem 2rem;
+            padding-left: 0;
+            padding-bottom: 4rem;
             align-items: center;
             text-align: center;
           }
@@ -234,7 +251,7 @@ const HeroSection = ({ isAdmin, path, navigate, handleLogout }) => {
         }
       `}</style>
 
-      {/* LEFT: Clean, structured typography block */}
+      {/* LEFT: Typography */}
       <div className="hero-text-panel">
         <div style={anim(0.1)} className="eyebrow">Lista de Presentes</div>
         
@@ -264,14 +281,16 @@ const HeroSection = ({ isAdmin, path, navigate, handleLogout }) => {
         )}
       </div>
 
-      {/* RIGHT: Unobstructed, perfectly framed photo */}
+      {/* RIGHT: Framed Photography */}
       <div className="hero-photo-panel">
-        <img 
-          src={COUPLE_PHOTO} 
-          alt="Daiane e Cássio" 
-          className="hero-img"
-          onError={(e) => { e.target.style.display = 'none'; }}
-        />
+        <div className="hero-photo-wrapper">
+          <img 
+            src={COUPLE_PHOTO} 
+            alt="Daiane e Cássio" 
+            className="hero-img"
+            onError={(e) => { e.target.style.display = 'none'; }}
+          />
+        </div>
       </div>
     </header>
   );
