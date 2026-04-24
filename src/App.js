@@ -74,33 +74,35 @@ const HeroSection = ({ isAdmin, path, navigate, handleLogout }) => {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap');
 
-        /* MASTER WRAPPER: 
-          Forcing the dark theme and breaking out of any global padding/margins 
-        */
+        /* ── THE NUKE: Absolute wrapper immune to global flex/grid ── */
         .hero-cinematic-locked {
-          position: relative;
-          width: 100%;
-          height: 100vh;
-          height: 100dvh;
-          min-height: 700px;
-          background-color: #050b11 !important; /* Force override floral background */
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          overflow: hidden;
-          margin: 0;
-          padding: 0;
-          box-sizing: border-box;
+          position: relative !important;
+          display: block !important; /* Force block to kill global grid/flex wrappers */
+          width: 100% !important;
+          height: 100vh !important;
+          min-height: 700px !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          overflow: hidden !important;
+          background-color: #050b11 !important;
+          box-sizing: border-box !important;
         }
 
-        /* ── LEFT: Typography Canvas (Strict Dark Isolation) ── */
+        /* ── LEFT CANVAS: Pinned absolute to force 100% height ── */
         .hero-left-canvas {
-          background-color: #050b11 !important; /* Double-lock the background */
-          position: relative;
-          z-index: 10;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          padding: 0 10% 0 15%;
+          position: absolute !important;
+          top: 0 !important;
+          left: 0 !important;
+          width: 50% !important;
+          height: 100% !important;
+          background-color: #050b11 !important;
+          z-index: 10 !important;
+          display: flex !important;
+          flex-direction: column !important;
+          justify-content: center !important;
+          padding: 0 5% 0 10% !important;
+          box-sizing: border-box !important;
+          margin: 0 !important;
         }
 
         .eyebrow-container {
@@ -197,28 +199,29 @@ const HeroSection = ({ isAdmin, path, navigate, handleLogout }) => {
           line-height: 1.4;
         }
 
-        /* ── RIGHT: Image Canvas with Structural Fade ── */
+        /* ── RIGHT CANVAS: Pinned Absolute ── */
         .hero-right-canvas {
-          position: relative;
-          width: 100%;
-          height: 100%;
-          overflow: hidden;
+          position: absolute !important;
+          top: 0 !important;
+          right: 0 !important;
+          width: 58% !important; /* Deliberately wide so it slides under the left canvas */
+          height: 100% !important;
+          overflow: hidden !important;
+          z-index: 1 !important;
+          margin: 0 !important;
+          padding: 0 !important;
         }
 
-        /* THE FADE: 
-          Anchored to the right container, expanding outward. 
-          Uses the exact background hex of the left canvas for a seamless weld.
-        */
+        /* The Seamless Mask */
         .hero-right-canvas::before {
           content: '';
           position: absolute;
           inset: 0;
-          background: linear-gradient(90deg, #050b11 0%, rgba(5,11,17,0.7) 20%, transparent 50%);
+          background: linear-gradient(90deg, #050b11 0%, rgba(5,11,17,0.7) 25%, transparent 55%);
           z-index: 2;
           pointer-events: none;
         }
 
-        /* Top and Bottom vignetting for true cinematic framing */
         .hero-right-canvas::after {
           content: '';
           position: absolute;
@@ -236,6 +239,7 @@ const HeroSection = ({ isAdmin, path, navigate, handleLogout }) => {
           transform: scale(${visible ? 1 : 1.05});
           transition: transform 3.5s cubic-bezier(0.19, 1, 0.22, 1);
           z-index: 1;
+          display: block;
         }
 
         .admin-nav {
@@ -269,24 +273,30 @@ const HeroSection = ({ isAdmin, path, navigate, handleLogout }) => {
           color: ${colors.primaryLight};
         }
 
-        /* Mobile Adjustments */
+        /* Mobile Adjustments: Switching Absolute to Relative Flow safely */
         @media (max-width: 1024px) {
           .hero-cinematic-locked {
-            grid-template-columns: 1fr;
-            grid-template-rows: 60vh 1fr; /* Image on top, text on bottom */
-            height: auto;
+            display: flex !important;
+            flex-direction: column !important;
+            height: auto !important;
+            min-height: 100vh !important;
           }
           
           .hero-left-canvas {
-            padding: 4rem 2rem;
-            order: 2;
+            position: relative !important;
+            width: 100% !important;
+            height: auto !important;
+            padding: 4rem 2rem !important;
+            order: 2 !important; /* Stack text at the bottom */
           }
 
           .hero-right-canvas {
-            order: 1;
+            position: relative !important;
+            width: 100% !important;
+            height: 60vh !important;
+            order: 1 !important; /* Stack image at the top */
           }
 
-          /* Flip the gradient fade for mobile vertical stacking */
           .hero-right-canvas::before {
             background: linear-gradient(180deg, transparent 50%, rgba(5,11,17,0.8) 80%, #050b11 100%);
           }
