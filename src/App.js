@@ -54,445 +54,413 @@ const colors = {
 };
 
 const COUPLE_PHOTO = process.env.REACT_APP_COUPLE_PHOTO_URL || '/hero.jpg';
-
+ 
+const gold = '#C9A84C';
+const goldLight = '#E8C97A';
+ 
 const HeroSection = ({ isAdmin, path, navigate, handleLogout }) => {
-  const [visible, setVisible] = useState(false);
+  const [loaded, setLoaded] = useState(false);
  
   useEffect(() => {
-    const t = setTimeout(() => setVisible(true), 80);
+    const t = setTimeout(() => setLoaded(true), 120);
     return () => clearTimeout(t);
   }, []);
  
-  return (
-    <header style={{ position: 'relative', width: '100%', overflow: 'hidden', background: '#050b11' }}>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap');
+  const reveal = (delay) => ({
+    opacity: loaded ? 1 : 0,
+    transform: loaded ? 'translateY(0px)' : 'translateY(22px)',
+    transition: `opacity 1.4s cubic-bezier(0.16,1,0.3,1) ${delay}s, transform 1.4s cubic-bezier(0.16,1,0.3,1) ${delay}s`,
+  });
  
-        /* ─── HERO SHELL ─── */
-        .hero-shell {
+  const fadeIn = (delay) => ({
+    opacity: loaded ? 1 : 0,
+    transition: `opacity 1.6s ease ${delay}s`,
+  });
+ 
+  return (
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;1,300;1,400&family=Tenor+Sans&family=Cormorant:ital,wght@1,300;1,400&display=swap');
+ 
+        html, body { margin: 0; padding: 0; overflow-x: hidden; }
+ 
+        /* ── HERO SHELL ── */
+        .hs-shell {
           position: relative;
           width: 100%;
           height: 100vh;
-          min-height: 600px;
-          max-height: 960px;
-          display: flex;
-          align-items: stretch;
+          min-height: 640px;
           overflow: hidden;
-          background: #050b11;
+          background: #08080a;
         }
  
-        /* ─── IMAGE PANEL ─── */
-        .hero-img-panel {
-          position: absolute !important;
-          top: 0 !important;
-          right: 0 !important;
-          width: 55% !important;
-          height: 100% !important;
-          z-index: 1 !important;
-          overflow: hidden !important;
+        /* ── FULL-BLEED PHOTO ── */
+        .hs-photo {
+          position: absolute;
+          inset: 0;
+          z-index: 1;
         }
  
-        .hero-img-panel img {
+        .hs-photo img {
           width: 100%;
           height: 100%;
           object-fit: cover;
-          object-position: center 15%;
+          object-position: center 18%;
           display: block;
-          animation: heroZoom 7s cubic-bezier(0.19,1,0.22,1) forwards;
+        }
+ 
+        .hs-photo img.img-loaded {
+          animation: heroZoom 3.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
  
         @keyframes heroZoom {
-          from { transform: scale(1.07); }
+          from { transform: scale(1.06); }
           to   { transform: scale(1.00); }
         }
  
-        /* Left gradient fade (the key fix) */
-        .hero-img-panel::before {
-          content: '';
+        /* ── CINEMATIC VIGNETTE ── */
+        .hs-vignette {
           position: absolute;
           inset: 0;
-          background: linear-gradient(
-            to right,
-            #050b11 0%,
-            rgba(5,11,17,0.80) 20%,
-            rgba(5,11,17,0.25) 50%,
-            transparent 72%,
-            #050b11 100%
-          );
           z-index: 2;
-          pointer-events: none;
+          background:
+            linear-gradient(to top,    rgba(4,4,6,0.97) 0%,  rgba(4,4,6,0.68) 28%, rgba(4,4,6,0.1) 55%, transparent 72%),
+            linear-gradient(to bottom, rgba(4,4,6,0.65) 0%,  transparent 28%),
+            linear-gradient(to right,  rgba(4,4,6,0.45) 0%,  transparent 32%),
+            linear-gradient(to left,   rgba(4,4,6,0.72) 0%,  transparent 38%);
         }
  
-        /* Top & bottom vignette */
-        .hero-img-panel::after {
-          content: '';
+        /* ── MAIN CONTENT: bottom-anchored ── */
+        .hs-content {
           position: absolute;
-          inset: 0;
-          background: linear-gradient(
-            to bottom,
-            #050b11 0%,
-            transparent 12%,
-            transparent 84%,
-            #050b11 100%
-          );
-          z-index: 2;
-          pointer-events: none;
-        }
- 
-        /* ─── CONTENT PANEL ─── */
-        .hero-content {
-          position: relative;
+          bottom: 0;
+          left: 0;
+          right: 0;
           z-index: 10;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          padding: 0 4% 0 8%;
-          width: 54%;
-          min-width: 0;
+          padding: 0 7% 5.5rem;
+          display: grid;
+          grid-template-columns: 1fr auto;
+          align-items: flex-end;
+          gap: 3rem;
         }
  
-        /* ─── EYEBROW ─── */
-        .hero-eyebrow {
+        /* ── EYEBROW ── */
+        .hs-eyebrow {
           display: flex;
           align-items: center;
-          gap: 1rem;
-          margin-bottom: 2.6rem;
+          gap: 0.9rem;
+          margin-bottom: 1.8rem;
         }
  
-        .hero-eyebrow__line {
-          width: 36px;
+        .hs-eyebrow-line {
+          display: block;
+          width: 32px;
           height: 1px;
-          background: ${colors.gold};
+          background: ${gold};
           transform-origin: left;
-          transform: scaleX(0);
-          transition: transform 1s cubic-bezier(0.19,1,0.22,1) 0.5s;
           flex-shrink: 0;
+          transition: transform 1.2s cubic-bezier(0.16,1,0.3,1) 0.4s;
         }
  
-        .hero-eyebrow__line.visible {
+        .hs-eyebrow-line.line-visible {
           transform: scaleX(1);
         }
  
-        .hero-eyebrow__text {
-          font-family: 'Jost', sans-serif;
-          font-weight: 400;
-          font-size: 0.6rem;
-          letter-spacing: 0.45em;
-          text-transform: uppercase;
-          color: ${colors.gold};
+        .hs-eyebrow-line.line-hidden {
+          transform: scaleX(0);
         }
  
-        /* ─── NAMES ─── */
-        .hero-name {
-          font-family: 'Cormorant Garamond', serif;
+        .hs-eyebrow-text {
+          font-family: 'Tenor Sans', sans-serif;
+          font-size: 0.58rem;
+          letter-spacing: 0.5em;
+          text-transform: uppercase;
+          color: ${gold};
+        }
+ 
+        /* ── NAMES ── */
+        .hs-names { margin-bottom: 1.8rem; }
+ 
+        .hs-name {
+          font-family: 'Playfair Display', serif;
           font-weight: 300;
-          font-size: clamp(4rem, 6.5vw, 7.2rem);
-          line-height: 0.88;
+          font-size: clamp(4.5rem, 8vw, 9rem);
+          line-height: 0.9;
           color: #ffffff;
-          letter-spacing: -0.02em;
           display: block;
+          letter-spacing: -0.025em;
+        }
+ 
+        .hs-amp {
+          font-family: 'Cormorant', serif;
+          font-style: italic;
+          font-weight: 300;
+          font-size: clamp(2.5rem, 4vw, 4.2rem);
+          color: ${gold};
+          opacity: 0.85;
+          display: block;
+          line-height: 1;
+          margin: 0.15rem 0 0.15rem 0.1em;
+        }
+ 
+        /* ── TAGLINE ── */
+        .hs-tagline {
+          font-family: 'Playfair Display', serif;
+          font-style: italic;
+          font-weight: 300;
+          font-size: clamp(0.95rem, 1.2vw, 1.15rem);
+          color: rgba(255,255,255,0.48);
+          line-height: 1.85;
+          max-width: 36ch;
           margin: 0;
         }
  
-        .hero-ampersand {
-          font-family: 'Cormorant Garamond', serif;
-          font-style: italic;
-          font-weight: 300;
-          font-size: clamp(2.4rem, 3.8vw, 3.6rem);
-          color: rgba(255,255,255,0.22);
-          line-height: 0.9;
-          display: block;
-          margin: 0.45rem 0 0.45rem 0.15em;
-        }
- 
-        /* ─── DIVIDER ─── */
-        .hero-divider {
-          width: 48px;
-          height: 1px;
-          background: rgba(212,175,55,0.35);
-          margin: 2rem 0;
-        }
- 
-        /* ─── TAGLINE ─── */
-        .hero-tagline {
-          font-family: 'Cormorant Garamond', serif;
-          font-style: italic;
-          font-weight: 300;
-          font-size: clamp(1.05rem, 1.3vw, 1.25rem);
-          color: rgba(255,255,255,0.52);
-          line-height: 1.75;
-          margin: 0 0 3rem 0;
-          max-width: 420px;
-        }
- 
-        /* ─── META ─── */
-        .hero-meta {
-          display: flex;
-          padding-left: 1.25rem;
-          border-left: 1px solid rgba(255,255,255,0.12);
-        }
- 
-        .hero-meta__item {
+        /* ── RIGHT META STACK ── */
+        .hs-right {
           display: flex;
           flex-direction: column;
-          gap: 0.4rem;
+          align-items: flex-end;
+          gap: 2.2rem;
+          padding-bottom: 0.4rem;
         }
  
-        .hero-meta__item + .hero-meta__item {
-          margin-left: 3.5rem;
-        }
- 
-        .hero-meta__label {
-          font-family: 'Jost', sans-serif;
-          font-weight: 500;
-          font-size: 0.52rem;
-          letter-spacing: 0.35em;
-          text-transform: uppercase;
-          color: rgba(255,255,255,0.32);
-        }
- 
-        .hero-meta__value {
-          font-family: 'Jost', sans-serif;
-          font-weight: 300;
-          font-size: 0.9rem;
-          letter-spacing: 0.12em;
-          color: #ffffff;
-        }
- 
-        /* ─── ADMIN NAV ─── */
-        .hero-admin-nav {
+        .hs-meta-item {
+          text-align: right;
           display: flex;
-          gap: 0.75rem;
-          margin-top: 3.5rem;
-          flex-wrap: wrap;
+          flex-direction: column;
+          gap: 0.35rem;
         }
  
-        .hero-admin-btn {
-          padding: 0.55rem 1.15rem;
-          border: 1px solid rgba(255,255,255,0.14);
-          background: transparent;
-          color: rgba(255,255,255,0.6);
-          font-family: 'Jost', sans-serif;
+        .hs-meta-label {
+          font-family: 'Tenor Sans', sans-serif;
+          font-size: 0.5rem;
+          letter-spacing: 0.42em;
+          text-transform: uppercase;
+          color: rgba(255,255,255,0.28);
+        }
+ 
+        .hs-meta-value {
+          font-family: 'Playfair Display', serif;
           font-weight: 300;
-          font-size: 0.68rem;
-          letter-spacing: 0.18em;
+          font-size: 1rem;
+          letter-spacing: 0.08em;
+          color: rgba(255,255,255,0.88);
+        }
+ 
+        .hs-meta-divider {
+          width: 1px;
+          height: 28px;
+          background: linear-gradient(to bottom, transparent, ${gold}60, transparent);
+          align-self: flex-end;
+        }
+ 
+        /* ── VERTICAL SCROLL INDICATOR ── */
+        .hs-scroll {
+          position: absolute;
+          left: 2.8rem;
+          top: 50%;
+          transform: translateY(-50%);
+          z-index: 10;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 0.6rem;
+        }
+ 
+        .hs-scroll-line {
+          width: 1px;
+          height: 52px;
+          background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.2));
+          animation: scrollPulse 2.6s ease-in-out infinite;
+        }
+ 
+        .hs-scroll-text {
+          font-family: 'Tenor Sans', sans-serif;
+          font-size: 0.47rem;
+          letter-spacing: 0.52em;
+          text-transform: uppercase;
+          color: rgba(255,255,255,0.22);
+          writing-mode: vertical-rl;
+        }
+ 
+        @keyframes scrollPulse {
+          0%, 100% { opacity: 0.3; }
+          50%       { opacity: 1; }
+        }
+ 
+        /* ── ADMIN TOPBAR ── */
+        .hs-topbar {
+          position: absolute;
+          top: 2.5rem;
+          right: 7%;
+          z-index: 20;
+          display: flex;
+          gap: 0.6rem;
+          align-items: center;
+        }
+ 
+        .hs-nav-btn {
+          padding: 0.5rem 1rem;
+          border: 1px solid rgba(255,255,255,0.12);
+          background: rgba(0,0,0,0.3);
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+          color: rgba(255,255,255,0.5);
+          font-family: 'Tenor Sans', sans-serif;
+          font-size: 0.58rem;
+          letter-spacing: 0.22em;
           text-transform: uppercase;
           cursor: pointer;
           transition: all 0.25s ease;
           border-radius: 2px;
           display: flex;
           align-items: center;
-          gap: 0.4rem;
+          gap: 0.35rem;
         }
  
-        .hero-admin-btn:hover {
+        .hs-nav-btn:hover {
           color: #fff;
-          border-color: rgba(255,255,255,0.38);
+          border-color: rgba(255,255,255,0.28);
+          background: rgba(0,0,0,0.5);
         }
  
-        .hero-admin-btn.active {
-          border-color: ${colors.primary};
-          color: ${colors.primaryLight};
+        .hs-nav-btn.active {
+          border-color: ${gold};
+          color: ${goldLight};
         }
  
-        /* ─── SCROLL HINT ─── */
-        .hero-scroll-hint {
+        /* ── TOP CENTER ORNAMENT ── */
+        .hs-stamp {
           position: absolute;
-          bottom: 2.5rem;
-          left: 8%;
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-          z-index: 10;
+          top: 2.4rem;
+          left: 50%;
+          transform: translateX(-50%);
+          z-index: 20;
         }
  
-        .hero-scroll-hint__line {
-          width: 24px;
+        /* ── GOLD BOTTOM RULE ── */
+        .hs-bottom-rule {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
           height: 1px;
-          background: rgba(255,255,255,0.18);
+          background: linear-gradient(to right, transparent, ${gold}55, transparent);
+          z-index: 15;
         }
  
-        .hero-scroll-hint__text {
-          font-family: 'Jost', sans-serif;
-          font-size: 0.52rem;
-          letter-spacing: 0.42em;
-          text-transform: uppercase;
-          color: rgba(255,255,255,0.28);
-        }
- 
-        /* ─── CORNER ORNAMENT ─── */
-        .hero-ornament {
-          position: absolute;
-          bottom: 2rem;
-          right: 2.2rem;
-          z-index: 10;
-          opacity: 0.35;
-        }
- 
-        /* ─── FADE-UP ANIMATION CLASSES ─── */
-        .fade-up {
-          opacity: 0;
-          transform: translateY(18px);
-          transition: opacity 1.1s cubic-bezier(0.19,1,0.22,1), transform 1.1s cubic-bezier(0.19,1,0.22,1);
-        }
- 
-        .fade-up.visible {
-          opacity: 1;
-          transform: translateY(0);
-        }
- 
-        /* ─── MOBILE ─── */
-        @media (max-width: 900px) {
-          .hero-shell {
-            flex-direction: column;
-            height: auto;
-            max-height: none;
-            min-height: 100svh;
+        /* ── MOBILE ── */
+        @media (max-width: 768px) {
+          .hs-content {
+            grid-template-columns: 1fr;
+            padding: 0 6% 4.5rem;
+            gap: 1.8rem;
           }
  
-          .hero-img-panel {
-            position: relative !important;
-            width: 100% !important;
-            height: 55vw !important;
-            min-height: 260px !important;
-            max-height: 420px !important;
+          .hs-right {
+            flex-direction: row;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 1.5rem;
           }
  
-          .hero-img-panel::before {
-            background: linear-gradient(
-              to bottom,
-              transparent 40%,
-              rgba(5,11,17,0.65) 75%,
-              #050b11 100%
-            );
-          }
+          .hs-meta-item   { text-align: left; }
+          .hs-meta-divider { height: 36px; }
  
-          .hero-content {
-            width: 100%;
-            padding: 2.5rem 6% 4rem;
-          }
+          .hs-name { font-size: clamp(3.5rem, 15vw, 6rem); }
+          .hs-amp  { font-size: clamp(2rem, 8vw, 3.2rem); }
  
-          .hero-name { font-size: clamp(3.2rem, 14vw, 5rem) !important; }
-          .hero-ampersand { font-size: clamp(2rem, 8vw, 3rem) !important; }
- 
-          .hero-meta__item + .hero-meta__item { margin-left: 2.5rem; }
- 
-          .hero-scroll-hint, .hero-ornament { display: none; }
+          .hs-scroll { display: none; }
+          .hs-stamp  { display: none; }
+          .hs-topbar { top: 1.5rem; right: 5%; }
         }
       `}</style>
  
-      <div className="hero-shell">
+      <section className="hs-shell">
  
-        {/* ── IMAGE PANEL ── */}
-        <div className="hero-img-panel">
+        {/* Full-bleed photo */}
+        <div className="hs-photo">
           <img
             src={COUPLE_PHOTO}
             alt="Daiane e Cássio"
+            className={loaded ? 'img-loaded' : ''}
             onError={(e) => { e.target.style.display = 'none'; }}
           />
         </div>
  
-        {/* ── CONTENT PANEL ── */}
-        <div className="hero-content">
+        {/* Cinematic vignette */}
+        <div className="hs-vignette" />
  
-          {/* Eyebrow */}
-          <div className="hero-eyebrow">
-            <div className={`hero-eyebrow__line ${visible ? 'visible' : ''}`} />
-            <span className="hero-eyebrow__text">Celebre Conosco</span>
-          </div>
- 
-          {/* Names */}
-          <div style={{ marginBottom: '2rem' }}>
-            <span
-              className={`hero-name fade-up ${visible ? 'visible' : ''}`}
-              style={{ transitionDelay: '0.2s' }}
-            >Daiane</span>
-            <span
-              className={`hero-ampersand fade-up ${visible ? 'visible' : ''}`}
-              style={{ transitionDelay: '0.35s' }}
-            >&</span>
-            <span
-              className={`hero-name fade-up ${visible ? 'visible' : ''}`}
-              style={{ transitionDelay: '0.5s' }}
-            >Cássio</span>
-          </div>
- 
-          {/* Divider */}
-          <div
-            className={`hero-divider fade-up ${visible ? 'visible' : ''}`}
-            style={{ transitionDelay: '0.65s' }}
-          />
- 
-          {/* Tagline */}
-          <p
-            className={`hero-tagline fade-up ${visible ? 'visible' : ''}`}
-            style={{ transitionDelay: '0.78s' }}
-          >
-            Obrigada por fazerem parte da nossa história e do nosso sonho.
-          </p>
- 
-          {/* Meta */}
-          <div
-            className={`hero-meta fade-up ${visible ? 'visible' : ''}`}
-            style={{ transitionDelay: '0.92s' }}
-          >
-            <div className="hero-meta__item">
-              <span className="hero-meta__label">Data</span>
-              <span className="hero-meta__value">14 · 11 · 2026</span>
-            </div>
-            <div className="hero-meta__item">
-              <span className="hero-meta__label">Local</span>
-              <span className="hero-meta__value">Imbituba, SC</span>
-            </div>
-          </div>
- 
-          {/* Admin nav */}
-          {isAdmin && (
-            <div
-              className={`hero-admin-nav fade-up ${visible ? 'visible' : ''}`}
-              style={{ transitionDelay: '1.05s' }}
-            >
-              <button
-                className={`hero-admin-btn ${path === '/' ? 'active' : ''}`}
-                onClick={() => navigate('/')}
-              >Lista</button>
-              <button
-                className={`hero-admin-btn ${path === '/dashboard' ? 'active' : ''}`}
-                onClick={() => navigate('/dashboard')}
-              >Dashboard</button>
-              <button
-                className="hero-admin-btn"
-                onClick={() => handleLogout(navigate)}
-              >
-                <LogOut size={11} /> Sair
-              </button>
-            </div>
-          )}
-        </div>
- 
-        {/* Scroll hint */}
-        <div
-          className={`hero-scroll-hint fade-up ${visible ? 'visible' : ''}`}
-          style={{ transitionDelay: '1.4s' }}
-        >
-          <div className="hero-scroll-hint__line" />
-          <span className="hero-scroll-hint__text">Scroll</span>
-        </div>
- 
-        {/* Corner ornament */}
-        <div className="hero-ornament">
-          <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
-            <circle cx="22" cy="22" r="21" stroke={colors.gold} strokeWidth="0.5" />
-            <circle cx="22" cy="22" r="2.5" fill={colors.gold} />
-            <line x1="22" y1="1" x2="22" y2="9" stroke={colors.gold} strokeWidth="0.5" />
-            <line x1="22" y1="35" x2="22" y2="43" stroke={colors.gold} strokeWidth="0.5" />
-            <line x1="1" y1="22" x2="9" y2="22" stroke={colors.gold} strokeWidth="0.5" />
-            <line x1="35" y1="22" x2="43" y2="22" stroke={colors.gold} strokeWidth="0.5" />
+        {/* Top center ornament */}
+        <div className="hs-stamp" style={fadeIn(1.2)}>
+          <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+            <circle cx="20" cy="20" r="19" stroke={gold} strokeWidth="0.6" opacity="0.4" />
+            <circle cx="20" cy="20" r="2" fill={gold} opacity="0.55" />
+            <line x1="20" y1="1" x2="20" y2="7.5"  stroke={gold} strokeWidth="0.6" opacity="0.4" />
+            <line x1="20" y1="32.5" x2="20" y2="39" stroke={gold} strokeWidth="0.6" opacity="0.4" />
+            <line x1="1" y1="20" x2="7.5" y2="20"   stroke={gold} strokeWidth="0.6" opacity="0.4" />
+            <line x1="32.5" y1="20" x2="39" y2="20"  stroke={gold} strokeWidth="0.6" opacity="0.4" />
           </svg>
         </div>
  
-      </div>
-    </header>
+        {/* Admin nav */}
+        {isAdmin && (
+          <div className="hs-topbar" style={fadeIn(0.8)}>
+            <button className={`hs-nav-btn ${path === '/' ? 'active' : ''}`} onClick={() => navigate('/')}>Lista</button>
+            <button className={`hs-nav-btn ${path === '/dashboard' ? 'active' : ''}`} onClick={() => navigate('/dashboard')}>Dashboard</button>
+            <button className="hs-nav-btn" onClick={() => handleLogout(navigate)}>
+              <LogOut size={10} /> Sair
+            </button>
+          </div>
+        )}
+ 
+        {/* Vertical scroll indicator */}
+        <div className="hs-scroll" style={fadeIn(2)}>
+          <div className="hs-scroll-line" />
+          <span className="hs-scroll-text">Scroll</span>
+        </div>
+ 
+        {/* Main content */}
+        <div className="hs-content">
+ 
+          {/* Left: text */}
+          <div>
+            <div className="hs-eyebrow" style={reveal(0.3)}>
+              <span className={`hs-eyebrow-line ${loaded ? 'line-visible' : 'line-hidden'}`} />
+              <span className="hs-eyebrow-text">Celebre Conosco</span>
+            </div>
+ 
+            <div className="hs-names">
+              <span className="hs-name" style={reveal(0.45)}>Daiane</span>
+              <span className="hs-amp"  style={reveal(0.58)}>&</span>
+              <span className="hs-name" style={reveal(0.72)}>Cássio</span>
+            </div>
+ 
+            <p className="hs-tagline" style={reveal(0.88)}>
+              Obrigada por fazerem parte da nossa história e do nosso sonho.
+            </p>
+          </div>
+ 
+          {/* Right: meta */}
+          <div className="hs-right" style={reveal(1.0)}>
+            <div className="hs-meta-item">
+              <span className="hs-meta-label">Data</span>
+              <span className="hs-meta-value">14 · 11 · 2026</span>
+            </div>
+            <div className="hs-meta-divider" />
+            <div className="hs-meta-item">
+              <span className="hs-meta-label">Local</span>
+              <span className="hs-meta-value">Imbituba, SC</span>
+            </div>
+          </div>
+ 
+        </div>
+ 
+        {/* Gold bottom rule */}
+        <div className="hs-bottom-rule" />
+ 
+      </section>
+    </>
   );
 };
 
